@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARPOOOO - 로그인</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <h4 class="fw-bold">로그인</h4>
+        <p class="mb-0">CARPOOOO와 함께하세요</p>
+    </div>
+
+    <!-- 로그인 카드 -->
+    <div class="container mt-4" style="max-width:400px;">
+        <div class="card p-4">
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">전화번호</label>
+                    <input type="tel" class="form-control" id="phone" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">비밀번호</label>
+                    <input type="password" class="form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">로그인</button>
+            </form>
+            <div class="text-center mt-3">
+                계정이 없으신가요? <a href="signup.html">회원가입</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="footer">
+        <p>© 2025 CARPOOOO. All rights reserved.</p>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const phone = document.getElementById("phone").value;
+            const password = document.getElementById("password").value;
+
+            let users = JSON.parse(localStorage.getItem("users")) || [];
+            const user = users.find(u => u.phone === phone && u.password === password);
+
+            if (!user) {
+                alert("전화번호 또는 비밀번호 오류");
+                return;
+            }
+
+            localStorage.setItem("currentUser", JSON.stringify(user));
+            alert("로그인 성공!");
+            window.location.href = "index.html"; // ✅ 여기서 index.html로 이동
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARPOOOO - 세차 예약하기</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        .step {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+        }
+
+        #calendar {
+            min-height: 500px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <h4 class="fw-bold">세차 예약하기</h4>
+        <p class="mb-0">원하는 코스와 날짜/시간을 선택하세요</p>
+    </div>
+
+    <div class="container mt-4">
+        <!-- 진행바 -->
+        <div class="progress mb-4">
+            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 20%;">
+                Step 1 / 5
+            </div>
+        </div>
+
+        <!-- Step 1: 예약자 정보 -->
+        <div class="step active" id="step1">
+            <h5>👤 예약자 정보</h5>
+            <input type="text" class="form-control mb-2" id="name" placeholder="예약자 성함">
+            <input type="tel" class="form-control mb-2" id="phone" placeholder="연락처">
+            <input type="text" class="form-control mb-2" id="address" placeholder="주소 검색" readonly
+                onclick="execDaumPostcode()">
+            <input type="text" class="form-control mb-2" id="addressDetail" placeholder="상세 위치 (예: 아파트 동/호)">
+            <button class="btn btn-primary w-100 mt-3" onclick="nextStep(2)">다음</button>
+        </div>
+
+        <!-- Step 2: 차량 정보 -->
+        <div class="step" id="step2">
+            <h5>🚗 차량 정보</h5>
+            <!-- 탭 버튼 -->
+            <ul class="nav nav-tabs" id="carTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="mycar-tab" data-bs-toggle="tab" data-bs-target="#mycar"
+                        type="button" role="tab">
+                        내 차량에서 선택
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="newcar-tab" data-bs-toggle="tab" data-bs-target="#newcar" type="button"
+                        role="tab">
+                        새로운 차량 등록
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <!-- 내 차량 선택 -->
+                <div class="tab-pane fade show active" id="mycar" role="tabpanel">
+                    <div id="myCarList" class="list-group"></div>
+                </div>
+                <!-- 새 차량 등록 -->
+                <div class="tab-pane fade" id="newcar" role="tabpanel">
+                    <input type="text" class="form-control mb-2" id="carNumber" placeholder="차량 번호판">
+                    <select class="form-select mb-2" id="carCompany">
+                        <option value="">제조사 선택</option>
+                        <option value="현대">현대</option>
+                        <option value="기아">기아</option>
+                    </select>
+                    <select class="form-select mb-2" id="carModel">
+                        <option value="">모델 선택</option>
+                    </select>
+                    <div class="alert alert-info" id="carSizeBox" style="display:none;"></div>
+                </div>
+            </div>
+            <button class="btn btn-secondary mt-3" onclick="prevStep(1)">이전</button>
+            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(3)">다음</button>
+        </div>
+
+        <!-- Step 3: 세차 코스 -->
+        <div class="step" id="step3">
+            <h5>🧽 세차 코스 선택</h5>
+            <p class="text-muted">차량 크기에 따라 가격이 자동 적용됩니다.</p>
+            <div id="priceTable"></div>
+
+            <!-- 아코디언: 선택내역 -->
+            <div class="accordion mt-4" id="courseAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingSummary">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#collapseSummary">
+                            선택한 코스 / 옵션 요약
+                        </button>
+                    </h2>
+                    <div id="collapseSummary" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div id="selectedCourse"></div>
+                            <div class="input-group mt-3">
+                                <input type="text" id="couponCode" class="form-control" placeholder="쿠폰 코드 입력">
+                                <button class="btn btn-outline-primary" onclick="applyCoupon()">적용</button>
+                            </div>
+                            <div id="discountInfo" class="text-success mt-2"></div>
+                            <div class="fw-bold mt-2" id="totalPrice"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary mt-3" onclick="prevStep(2)">이전</button>
+            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(4)">다음</button>
+        </div>
+
+        <!-- Step 4: 날짜 & 시간 -->
+        <div class="step" id="step4">
+            <h5>📅 예약 날짜 & 시간</h5>
+            <div id="calendar"></div>
+            <div id="timeSlots" class="mt-3"></div>
+            <button class="btn btn-secondary mt-3" onclick="prevStep(3)">이전</button>
+            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(5)">다음</button>
+        </div>
+
+        <!-- Step 5: 확인 -->
+        <div class="step" id="step5">
+            <h5>✅ 예약 확인</h5>
+            <div id="summary" class="border p-3 mb-3 bg-light"></div>
+            <button class="btn btn-secondary" onclick="prevStep(4)">이전</button>
+            <button class="btn btn-success float-end" onclick="confirmBooking()">결제하기</button>
+        </div>
+    </div>
+
+    <!-- 하단 탭바 -->
+    <div class="tabbar">
+        <div onclick="location.href='search.html'"><i class="bi bi-search"></i>검색</div>
+        <div class="active"><i class="bi bi-calendar-check"></i>예약</div>
+        <div onclick="location.href='index.html'"><i class="bi bi-house-door-fill"></i>홈</div>
+        <div onclick="location.href='wishlist.html'"><i class="bi bi-heart-fill"></i>찜</div>
+        <div onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+    <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script>
+        let bookingData = {};
+        let currentStep = 1;
+        let calendar;
+        let appliedDiscount = 0;
+
+        // 차량 DB
+        const carDatabase = {
+            "현대": { "모닝": "경형", "아반떼": "준중형", "소나타": "준대형", "그랜저": "대형" },
+            "기아": { "레이": "경형", "K3": "준중형", "K5": "준대형", "카니발": "RV" }
+        };
+
+        // 차량별 가격표
+        const priceTable = {
+            "경형": { one: 25000, month4: 35000, month8: 55000, interior: 10000 },
+            "준중형": { one: 30000, month4: 40000, month8: 65000, interior: 10000 },
+            "준대형": { one: 35000, month4: 45000, month8: 75000, interior: 10000 },
+            "대형": { one: 40000, month4: 50000, month8: 80000, interior: 10000 },
+            "SUV": { one: 40000, month4: 50000, month8: 85000, interior: 10000 },
+            "RV": { one: 45000, month4: 55000, month8: 90000, interior: 10000 }
+        };
+
+        // Step 이동
+        function updateProgress(step) {
+            currentStep = step;
+            const percent = (step / 5) * 100;
+            document.getElementById("progressBar").style.width = percent + "%";
+            document.getElementById("progressBar").innerText = `Step ${step} / 5`;
+        }
+
+        function nextStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateProgress(step);
+
+            if (step === 3) renderPriceTable();
+            if (step === 4 && calendar) setTimeout(() => calendar.render(), 200);
+            if (step === 5) {
+                bookingData.name = document.getElementById('name').value;
+                bookingData.phone = document.getElementById('phone').value;
+                bookingData.address = document.getElementById('address').value + " " + document.getElementById('addressDetail').value;
+                bookingData.carNumber = document.getElementById('carNumber').value;
+
+                document.getElementById("summary").innerHTML = `
+          <p><b>이름:</b> ${bookingData.name}</p>
+          <p><b>연락처:</b> ${bookingData.phone}</p>
+          <p><b>차량번호:</b> ${bookingData.carNumber}</p>
+          <p><b>차종:</b> ${bookingData.carCompany} ${bookingData.carModel} (${bookingData.carSize})</p>
+          <p><b>주소:</b> ${bookingData.address}</p>
+          <p><b>코스:</b> ${bookingData.course}</p>
+          <p><b>구독개월수:</b> ${bookingData.months || '해당없음'}</p>
+          <p><b>옵션:</b> ${bookingData.options ? bookingData.options.join(', ') : '없음'}</p>
+          <p><b>할인:</b> ${bookingData.discountText || '없음'}</p>
+          <p class="fw-bold"><b>최종 결제금액:</b> ${bookingData.finalPrice ? bookingData.finalPrice.toLocaleString() : 0}원</p>
+          <p><b>예약일:</b> ${bookingData.date || ''} ${bookingData.time || ''}</p>
+        `;
+            }
+        }
+        function prevStep(step) {
+            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+            document.getElementById('step' + step).classList.add('active');
+            updateProgress(step);
+        }
+
+        // Step1 자동 입력 (로그인 시)
+        function loadUserInfo() {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser) {
+                document.getElementById("name").value = currentUser.name || "";
+                document.getElementById("phone").value = currentUser.phone || "";
+                document.getElementById("address").value = currentUser.address || "";
+                document.getElementById("addressDetail").value = currentUser.addressDetail || "";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", loadUserInfo);
+
+        // 내 차량 불러오기
+        function loadMyCars() {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const myCarList = document.getElementById("myCarList");
+            myCarList.innerHTML = "";
+
+            if (currentUser && currentUser.cars && currentUser.cars.length > 0) {
+                currentUser.cars.forEach((car, idx) => {
+                    const btn = document.createElement("button");
+                    btn.className = "list-group-item list-group-item-action";
+                    btn.innerText = `${car.carNumber} - ${car.carCompany} ${car.carModel} (${car.carSize})`;
+                    btn.onclick = () => {
+                        bookingData.carNumber = car.carNumber;
+                        bookingData.carCompany = car.carCompany;
+                        bookingData.carModel = car.carModel;
+                        bookingData.carSize = car.carSize;
+                        document.querySelectorAll("#myCarList button").forEach(b => b.classList.remove("active"));
+                        btn.classList.add("active");
+                    };
+                    myCarList.appendChild(btn);
+                });
+            } else {
+                myCarList.innerHTML = `<p class="text-muted">등록된 차량이 없습니다. "새로운 차량 등록" 탭에서 추가하세요.</p>`;
+            }
+        }
+        document.addEventListener("DOMContentLoaded", loadMyCars);
+
+        // 주소 검색 (카카오)
+        function execDaumPostcode() {
+            new daum.Postcode({
+                oncomplete: function (data) {
+                    document.getElementById("address").value = data.address;
+                }
+            }).open();
+        }
+
+        // 제조사 선택 시 모델 업데이트
+        document.getElementById("carCompany").addEventListener("change", function () {
+            const company = this.value;
+            const modelSelect = document.getElementById("carModel");
+            modelSelect.innerHTML = "<option value=''>모델 선택</option>";
+            if (carDatabase[company]) {
+                Object.keys(carDatabase[company]).forEach(model => {
+                    const opt = document.createElement("option");
+                    opt.value = model;
+                    opt.innerText = model;
+                    modelSelect.appendChild(opt);
+                });
+            }
+        });
+
+        // 모델 선택 시 크기 매핑
+        document.getElementById("carModel").addEventListener("change", function () {
+            const company = document.getElementById("carCompany").value;
+            const model = this.value;
+            if (carDatabase[company] && carDatabase[company][model]) {
+                bookingData.carCompany = company;
+                bookingData.carModel = model;
+                bookingData.carSize = carDatabase[company][model];
+                const box = document.getElementById("carSizeBox");
+                box.style.display = "block";
+                box.innerText = `자동 분류된 차량 크기: ${bookingData.carSize}`;
+            }
+        });
+
+        // Step3 가격표 & 로직
+        function renderPriceTable() {
+            const size = bookingData.carSize;
+            if (!size) return;
+            const p = priceTable[size];
+            const div = document.getElementById("priceTable");
+            div.innerHTML = `
+        <table class="table text-center align-middle">
+          <thead class="table-dark"><tr><th>코스</th><th>선택</th></tr></thead>
+          <tbody>
+            <tr>
+              <td>일반세차 (1회)</td>
+              <td><button class="btn btn-outline-primary" onclick="selectCourse('일반세차', ${p.one}, false)">선택 (${p.one}원)</button></td>
+            </tr>
+            <tr>
+              <td>정기세차</td>
+              <td>
+                <select class="form-select" onchange="selectCourse('정기세차', ${p.month4}, true, this.value)">
+                  <option value="">개월 선택</option>
+                  <option value="1">1개월 (${p.month4}원)</option>
+                  <option value="6">6개월 (10% 할인)</option>
+                  <option value="12">12개월 (20% 할인)</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>내부세차 추가</td>
+              <td><button class="btn btn-outline-secondary" onclick="toggleOption('내부세차 추가', ${p.interior})">+${p.interior}원</button></td>
+            </tr>
+          </tbody>
+        </table>
+      `;
+            updateSummary();
+        }
+
+        function selectCourse(name, basePrice, isSub, months) {
+            bookingData.course = name;
+            bookingData.basePrice = basePrice;
+            if (isSub && months) {
+                bookingData.months = parseInt(months);
+                let discount = 0;
+                if (months == 6) discount = 0.1;
+                if (months == 12) discount = 0.2;
+                bookingData.basePrice = basePrice * months * (1 - discount);
+            } else {
+                bookingData.months = null;
+            }
+            updateSummary();
+        }
+
+        function toggleOption(name, price) {
+            if (!bookingData.options) bookingData.options = [];
+            if (!bookingData.optionPrice) bookingData.optionPrice = 0;
+
+            if (bookingData.options.includes(name)) {
+                bookingData.options = bookingData.options.filter(o => o !== name);
+                bookingData.optionPrice -= price;
+            } else {
+                bookingData.options.push(name);
+                bookingData.optionPrice += price;
+            }
+            updateSummary();
+        }
+
+        function applyCoupon() {
+            const code = document.getElementById("couponCode").value.trim().toUpperCase();
+            appliedDiscount = 0;
+            bookingData.discountText = "";
+
+            if (code === "WELCOME10") {
+                appliedDiscount = 0.1;
+                bookingData.discountText = "WELCOME10 (10% 할인)";
+            } else if (code === "EVENT20") {
+                appliedDiscount = 0.2;
+                bookingData.discountText = "EVENT20 (20% 할인)";
+            } else {
+                document.getElementById("discountInfo").innerText = "유효하지 않은 쿠폰 코드입니다.";
+                updateSummary();
+                return;
+            }
+            document.getElementById("discountInfo").innerText = bookingData.discountText;
+            updateSummary();
+        }
+
+        function updateSummary() {
+            let total = (bookingData.basePrice || 0) + (bookingData.optionPrice || 0);
+            if (appliedDiscount > 0) {
+                total = total * (1 - appliedDiscount);
+            }
+            bookingData.finalPrice = total;
+            document.getElementById("selectedCourse").innerHTML = `
+        <p><b>코스:</b> ${bookingData.course || '미선택'}</p>
+        <p><b>구독개월수:</b> ${bookingData.months || '해당없음'}</p>
+        <p><b>옵션:</b> ${bookingData.options ? bookingData.options.join(', ') : '없음'}</p>
+      `;
+            document.getElementById("totalPrice").innerText = "총 결제금액: " + total.toLocaleString() + "원";
+        }
+
+        // FullCalendar
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ko',
+                height: 500,
+                dateClick: function (info) {
+                    showTimeSlots(info.dateStr);
+                }
+            });
+            calendar.render();
+        });
+        const reservedSlots = {
+            "2025-08-22": ["10:00", "14:00"],
+            "2025-08-23": ["09:00", "11:00", "15:00"]
+        };
+        function showTimeSlots(date) {
+            const timeSlotsDiv = document.getElementById("timeSlots");
+            timeSlotsDiv.innerHTML = `<h6 class="mb-3">${date} 예약 가능 시간</h6>`;
+            const allSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
+            const reserved = reservedSlots[date] || [];
+            allSlots.forEach(slot => {
+                const btn = document.createElement("button");
+                const isReserved = reserved.includes(slot);
+                btn.className = "btn m-1 " + (isReserved ? "btn-secondary" : "btn-success");
+                btn.innerText = slot;
+                btn.disabled = isReserved;
+                if (!isReserved) {
+                    btn.onclick = () => {
+                        bookingData.date = date;
+                        bookingData.time = slot;
+                        document.querySelectorAll("#timeSlots button").forEach(b => b.classList.remove("btn-warning"));
+                        btn.classList.add("btn-warning");
+                    };
+                }
+                timeSlotsDiv.appendChild(btn);
+            });
+        }
+
+        // 예약 확정
+        function confirmBooking() {
+            let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
+            bookings.push({ ...bookingData, status: "대기중" });
+            localStorage.setItem("bookings", JSON.stringify(bookings));
+
+            // 로그인 사용자 히스토리 기록
+            let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser) {
+                if (!currentUser.history) currentUser.history = [];
+                currentUser.history.push({
+                    date: new Date().toLocaleString(),
+                    detail: `${bookingData.course} - ${bookingData.date} ${bookingData.time}`
+                });
+                localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            }
+            alert("예약이 완료되었습니다!");
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+
+</html>

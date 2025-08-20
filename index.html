@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARPOOOO</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <button class="btn btn-sm btn-light"><i class="bi bi-list"></i></button>
+            <h4 class="m-0 fw-bold">CARPOOOO</h4>
+            <button class="btn btn-sm btn-light"><i class="bi bi-bell"></i></button>
+        </div>
+
+        <!-- 로그인 상태 영역 -->
+        <div id="userStatus" class="mt-2"></div>
+
+        <div class="search-bar mt-2"><i class="bi bi-search"></i> 내 차를 반짝이게 해보세요</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const userStatus = document.getElementById("userStatus");
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+            if (currentUser) {
+                // 로그인 된 상태
+                userStatus.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center">
+          <span><strong>${currentUser.name}</strong>님 환영합니다 👋</span>
+          <button class="btn btn-sm btn-outline-light" id="logoutBtn">로그아웃</button>
+        </div>
+        <div class="mt-1">리워드: <span class="fw-bold text-warning">0P</span></div>
+      `;
+                document.getElementById("logoutBtn").addEventListener("click", () => {
+                    localStorage.removeItem("currentUser");
+                    alert("로그아웃 되었습니다.");
+                    location.reload();
+                });
+            } else {
+                // 비로그인 상태
+                userStatus.innerHTML = `
+        <div class="text-end">
+          <a href="login.html" class="btn btn-sm btn-light me-2">로그인</a>
+          <a href="signup.html" class="btn btn-sm btn-outline-light">회원가입</a>
+        </div>
+      `;
+            }
+        });
+    </script>
+
+    <!-- 퀵메뉴 -->
+    <div class="quick-menu">
+        <div class="quick-item" onclick="location.href='mypage.html#mycar'"><i class="bi bi-car-front-fill"></i>내 차
+        </div>
+        <div class="quick-item" onclick="location.href='booking.html'"><i class="bi bi-calendar-event"></i>프리오더</div>
+        <div class="quick-item" onclick="location.href='mypage.html#tickets'"><i
+                class="bi bi-ticket-perforated-fill"></i>이용권</div>
+        <div class="quick-item" onclick="location.href='mypage.html#history'"><i class="bi bi-clock-history"></i>히스토리
+        </div>
+    </div>
+
+    <!-- 배너 캐러셀 -->
+    <div id="promoCarousel" class="carousel slide px-3" data-bs-ride="carousel">
+        <div class="carousel-inner rounded-3 overflow-hidden">
+            <div class="carousel-item active"><img src="https://placehold.co/800x300" class="d-block w-100"
+                    alt="할인 이벤트"></div>
+            <div class="carousel-item"><img src="https://placehold.co/800x300" class="d-block w-100" alt="정기권 안내"></div>
+        </div>
+    </div>
+
+    <!-- 배지 메뉴 -->
+    <div class="badges">
+        <div class="badge-item">최대 5만원 쿠폰</div>
+        <div class="badge-item">이번달 쿠폰팩</div>
+        <div class="badge-item">카푸 드로우</div>
+        <div class="badge-item">이벤트 더보기</div>
+    </div>
+
+    <!-- 세차 꿀팁 카드 -->
+    <div class="container mt-3">
+        <h5 class="fw-bold mb-3">카푸에서 소개하는 관리 탭</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">비 오는 날 세차가 좋은 이유</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">타이어 광택 관리 팁</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">실내 청소 꿀팁</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">겨울철 세차 주의사항</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">여름철 차량 관리법</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-4">
+                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
+                    <div class="card-body">
+                        <p class="card-text">세차 후 왁스 관리</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3"><button class="btn btn-outline-primary btn-sm">더보기</button></div>
+    </div>
+
+    <!-- 세차상품 -->
+    <div class="container mt-4">
+        <h5 class="fw-bold mb-3">세차 상품</h5>
+        <div class="row">
+            <div class="col-12 col-md-4">
+                <div class="card product-card">
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold">단발 세차</h6>
+                        <p>1회 내/외부 세차</p>
+                        <p class="fw-bold text-primary">25,000원~</p>
+                        <button class="btn btn-primary btn-sm">예약하기</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card product-card">
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold">정기 세차</h6>
+                        <p>월 4회 / 8회 패키지</p>
+                        <p class="fw-bold text-primary">35,000원~</p>
+                        <button class="btn btn-primary btn-sm">예약하기</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-4">
+                <div class="card product-card">
+                    <div class="card-body text-center">
+                        <h6 class="fw-bold">실내 세차 옵션</h6>
+                        <p>내부 청소 & 코팅</p>
+                        <p class="fw-bold text-primary">+10,000원</p>
+                        <button class="btn btn-primary btn-sm">예약하기</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <div class="footer">
+        <p>© 2025 CARPOOOO. All rights reserved.</p>
+        <p>고객센터: 010-1234-5678 | info@carpoo.com</p>
+        <p>사업자등록번호: 123-45-67890</p>
+    </div>
+
+    <!-- 하단 탭바 -->
+    <div class="tabbar">
+        <div><i class="bi bi-search"></i>검색</div>
+        <div><i class="bi bi-calendar-check"></i>예약</div>
+        <div class="active"><i class="bi bi-house-door-fill"></i>홈</div>
+        <div><i class="bi bi-heart-fill"></i>찜</div>
+        <div onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
