@@ -7,6 +7,7 @@ body {
     color: #333;
 }
 
+
 h4,
 h5,
 h6 {
@@ -215,6 +216,11 @@ h6 {
     background: linear-gradient(135deg, #1e90ff, #007bff);
     color: white;
     text-align: center;
+
+    opacity: 0;
+    /* 시작은 투명 */
+    animation: fadeInOut 4s ease forwards;
+    /* 4초짜리 애니메이션 실행 */
 }
 
 .intro img {
@@ -235,4 +241,26 @@ h6 {
 .intro .btn {
     border-radius: 25px;
     font-weight: bold;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    /* 0~0.8s: 서서히 나타남 */
+    70% {
+        opacity: 1;
+    }
+
+    /* 0.8s~3.2s: 유지 */
+    100% {
+        opacity: 0;
+    }
+
+    /* 3.2s~4s: 서서히 사라짐 */
 }

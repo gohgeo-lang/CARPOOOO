@@ -16,15 +16,19 @@
     <div class="header">
         <div class="d-flex justify-content-between align-items-center mb-2">
             <button class="btn btn-sm btn-light"><i class="bi bi-list"></i></button>
-            <h4 class="m-0 fw-bold">CARPOOOO</h4>
+            <div class="text-center flex-grow-1">
+                <h4 class="m-0 fw-bold">CARPOOOO</h4>
+                <p class="mt-1 mb-0 small text-light">당신의 차를 위한 스마트 케어</p>
+            </div>
             <button class="btn btn-sm btn-light"><i class="bi bi-bell"></i></button>
         </div>
 
         <!-- 로그인 상태 영역 -->
-        <div id="userStatus" class="mt-2"></div>
+        <div id="userStatus" class="mt-4"></div>
 
-        <div class="search-bar mt-2"><i class="bi bi-search"></i> 내 차를 반짝이게 해보세요</div>
+        <div class="search-bar mt-3"><i class="bi bi-search"></i> 내 차를 반짝이게 해보세요</div>
     </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -35,25 +39,24 @@
                 // 로그인 된 상태
                 userStatus.innerHTML = `
         <div class="d-flex justify-content-between align-items-center">
-          <span><strong>${currentUser.name}</strong>님 환영합니다 👋</span>
-          <button class="btn btn-sm btn-outline-light" id="logoutBtn">로그아웃</button>
+          <span>
+            <strong>${currentUser.name}</strong>님 환영합니다! | 
+            리워드: <span class="fw-bold text-warning">0P</span>
+          </span>
         </div>
-        <div class="mt-1">리워드: <span class="fw-bold text-warning">0P</span></div>
-      `;
-                document.getElementById("logoutBtn").addEventListener("click", () => {
-                    localStorage.removeItem("currentUser");
-                    alert("로그아웃 되었습니다.");
-                    location.reload();
-                });
-            } else {
+    `;
+            }
+            else {
                 // 비로그인 상태
                 userStatus.innerHTML = `
-        <div class="text-end">
-          <a href="login.html" class="btn btn-sm btn-light me-2">로그인</a>
-          <a href="signup.html" class="btn btn-sm btn-outline-light">회원가입</a>
+        <div class="text-center">
+          <a href="login.html" class="text-light text-decoration-none fw-light">
+            로그인하고 더 많은 서비스를 이용해보세요
+          </a>
         </div>
       `;
             }
+
         });
     </script>
 
@@ -87,7 +90,7 @@
 
     <!-- 세차 꿀팁 카드 -->
     <div class="container mt-3">
-        <h5 class="fw-bold mb-3">카푸에서 소개하는 관리 탭</h5>
+        <h5 class="fw-bold mb-3">카푸의 차량관리 꿀팁</h5>
         <div class="row g-3">
             <div class="col-6 col-md-4">
                 <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
