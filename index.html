@@ -10,16 +10,133 @@
     <link href="style.css" rel="stylesheet">
 </head>
 
+<style>
+    /* 사이드 메뉴 */
+    .side-menu {
+        position: fixed;
+        top: 0;
+        left: -280px;
+        width: 280px;
+        height: 100%;
+        background: #fff;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, .2);
+        transition: left 0.3s ease;
+        padding: 20px;
+        z-index: 2000;
+        overflow-y: auto;
+    }
+
+    .side-menu.active {
+        left: 0;
+    }
+
+    /* 사이드 메뉴 제목 */
+    .side-menu p {
+        text-align: left;
+        color: #000;
+        font-weight: bold;
+        margin: 20px 0 10px;
+        /* 여백 넉넉하게 */
+    }
+
+    /* 사이드 메뉴 상단 */
+    .side-menu .menu-header {
+        text-align: center;
+    }
+
+    .side-menu .menu-header h5 {
+        color: #0d6efd;
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+    }
+
+    /* 사이드 메뉴 리스트 */
+    .side-menu .menu-list,
+    .side-menu .menu-policy ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .side-menu .menu-list li,
+    .side-menu .menu-policy li {
+        margin: 10px 0;
+    }
+
+    .side-menu a {
+        text-decoration: none;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .side-menu a:hover {
+        color: #0d6efd;
+    }
+
+    /* 오버레이 */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        z-index: 1500;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+</style>
+
+
 <body>
 
     <!-- 상단 헤더 -->
     <div class="header">
         <div class="d-flex justify-content-between align-items-center mb-2">
-            <button class="btn btn-sm btn-light"><i class="bi bi-list"></i></button>
+            <!-- 햄버거 버튼 -->
+            <button id="menuBtn" class="btn btn-sm btn-light"><i class="bi bi-list"></i></button>
+            <!-- 사이드메뉴 -->
+            <div id="sideMenu" class="side-menu">
+                <div class="menu-header">
+                    <h5 class="fw-bold">CARPOOOO</h5>
+                </div>
+                <hr>
+
+                <!-- 서비스메뉴 -->
+                <p class="fw-bold small text-muted mb-1">서비스</p>
+
+                <ul class="menu-list">
+                    <li><a href="car-profile.html"><i class="bi bi-car-front-fill"></i> 내 차</a></li>
+                    <li><a href="booking.html"><i class="bi bi-calendar-event"></i> 예약하기</a></li>
+                    <li><a href="mypage.html#tickets"><i class="bi bi-ticket-perforated-fill"></i> 보관함</a></li>
+                    <li><a href="mypage.html#history"><i class="bi bi-clock-history"></i> 히스토리</a></li>
+                    <li><a href="event.html"><i class="bi bi-gift-fill"></i> 이벤트</a></li>
+                    <li><a href="support.html"><i class="bi bi-headset"></i> 1:1 문의</a></li>
+                </ul>
+
+                <hr>
+
+                <!-- 약관 및 정책 -->
+                <div class="menu-policy">
+                    <p class="fw-bold small text-muted mb-1">약관 및 정책</p>
+                    <ul>
+                        <li><a href="terms.html">이용약관</a></li>
+                        <li><a href="privacy.html">개인정보 처리방침</a></li>
+                        <li><a href="finance-terms.html">카푸 전자금융거래 이용약관(선불)</a></li>
+                        <li><a href="location-terms.html">위치기반 서비스 이용약관</a></li>
+                        <li><a href="location-privacy.html">개인위치정보 처리방침</a></li>
+                    </ul>
+                </div>
+            </div>
             <div class="text-center flex-grow-1">
                 <h4 class="m-0 fw-bold">CARPOOOO</h4>
                 <p class="mt-1 mb-0 small text-light">당신의 차를 위한 스마트 케어</p>
             </div>
+            <!-- 알림창 -->
             <button class="btn btn-sm btn-light"><i class="bi bi-bell"></i></button>
         </div>
 
@@ -28,7 +145,8 @@
 
         <div class="search-bar mt-3"><i class="bi bi-search"></i> 내 차를 반짝이게 해보세요</div>
     </div>
-
+    <!-- 오버레이 -->
+    <div id="overlay" class="overlay"></div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -205,6 +323,20 @@
                 window.location.href = "car-profile.html";
             }
         }
+        // 사이드메뉴 열고 닫기
+        const menuBtn = document.getElementById("menuBtn");
+        const sideMenu = document.getElementById("sideMenu");
+        const overlay = document.getElementById("overlay");
+
+        menuBtn.addEventListener("click", () => {
+            sideMenu.classList.toggle("active");
+            overlay.classList.toggle("active");
+        });
+
+        overlay.addEventListener("click", () => {
+            sideMenu.classList.remove("active");
+            overlay.classList.remove("active");
+        });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

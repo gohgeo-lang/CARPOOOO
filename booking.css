@@ -14,3 +14,33 @@
     min-height: 500px;
     margin: 20px 0;
 }
+
+/* 헤더 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1E90FF;
+    /* 브랜드 파란색 */
+    color: white;
+    padding: 15px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-center {
+    text-align: center;
+}
+
+.btn-save-top {
+    border: none;
+    color: #ffffff;
+    background: none;
+    font-weight: 600;
+    padding: 6px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-save-top:hover {
+    color: #f1f1f1;
+}

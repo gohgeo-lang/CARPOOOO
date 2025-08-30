@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARPOOOO - 차량 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 700px;
+            margin: 30px auto;
+            padding-bottom: 80px;
+        }
+
+        /* 이미지 hover 효과 */
+        .car-photo {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+            cursor: pointer;
+            position: relative;
+            transition: filter 0.3s ease;
+        }
+
+        .car-photo:hover {
+            filter: brightness(70%);
+            /* 어둡게 처리 */
+        }
+
+
+        .preview-area {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* 헤더 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1E90FF;
+            /* 브랜드 파란색 */
+            color: white;
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header-center {
+            text-align: center;
+        }
+
+        .btn-save-top {
+            border: none;
+            color: #ffffff;
+            background: none;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-save-top:hover {
+            color: #f1f1f1;
+        }
+
+        /* 이미지가 없을 때 박스 */
+        .upload-placeholder {
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            color: #888;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <div>
+            <h4 class="fw-bold mb-0">차량 상세</h4>
+        </div>
+        <button type="submit" form="carForm" class="btn-save-top">저장</button>
+    </div>
+
+    <div class="container">
+        <form id="carForm">
+            <div class="mb-3">
+                <label class="form-label">차량 닉네임</label>
+                <input type="text" id="carNickname" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">브랜드</label>
+                <input type="text" id="carCompany" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">모델</label>
+                <input type="text" id="carModel" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">년식</label>
+                <input type="text" id="carYear" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">차량번호</label>
+                <input type="text" id="carNumber" class="form-control">
+            </div>
+
+            <!-- 정기구독 or 최근이용내역 -->
+            <div class="mb-3">
+                <label class="form-label">정기 구독/최근 이용</label>
+                <input type="text" id="carUsageInfo" class="form-control" readonly>
+            </div>
+
+            <!-- 차량 이미지 -->
+            <div class="mb-3">
+                <label class="form-label">차량 이미지</label>
+                <input type="file" id="carImageUpload" class="d-none" accept="image/*">
+                <div class="preview-area" id="imageContainer">
+                    <!-- 이미지 or placeholder 들어감 -->
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- 하단 탭바 -->
+    <div class="tabbar">
+        <div onclick="location.href='search.html'"><i class="bi bi-search"></i>검색</div>
+        <div onclick="location.href='booking.html'"><i class="bi bi-calendar-check"></i>예약</div>
+        <div onclick="location.href='index.html'"><i class="bi bi-house-door-fill"></i>홈</div>
+        <div onclick="location.href='wishlist.html'"><i class="bi bi-heart-fill"></i>찜</div>
+        <div class="active" onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
+    </div>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        const selectedCarIndex = localStorage.getItem("selectedCarIndex");
+        const car = currentUser.cars[selectedCarIndex];
+
+        // 기본 정보 채우기
+        document.getElementById("carNickname").value = car.carNickname || "";
+        document.getElementById("carCompany").value = car.carCompany || "";
+        document.getElementById("carModel").value = car.carModel || "";
+        document.getElementById("carYear").value = car.carYear || "";
+        document.getElementById("carNumber").value = car.carNumber || "";
+
+        // 구독 여부 → 사용내역 표시
+        const usageInput = document.getElementById("carUsageInfo");
+        if (car.subscriptionName) {
+            usageInput.value = "구독중: " + car.subscriptionName;
+        } else {
+            usageInput.value = "최근 이용: " + (car.lastWashDate || "기록 없음");
+        }
+
+        const imageContainer = document.getElementById("imageContainer");
+        const fileInput = document.getElementById("carImageUpload");
+
+        function renderImage() {
+            imageContainer.innerHTML = "";
+            if (car.carImage) {
+                const img = document.createElement("img");
+                img.src = car.carImage;
+                img.className = "car-photo";
+                img.onclick = () => {
+                    car.carImage = "";
+                    renderImage();
+                };
+                imageContainer.appendChild(img);
+            } else {
+                const placeholder = document.createElement("div");
+                placeholder.className = "upload-placeholder";
+                placeholder.innerText = "이미지를 등록해주세요";
+                placeholder.onclick = () => fileInput.click();
+                imageContainer.appendChild(placeholder);
+            }
+        }
+        renderImage();
+
+        // 이미지 업로드
+        function resizeImage(file, maxWidth, callback) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.onload = function () {
+                    const canvas = document.createElement("canvas");
+                    const scale = maxWidth / img.width;
+                    canvas.width = maxWidth;
+                    canvas.height = img.height * scale;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    callback(canvas.toDataURL("image/jpeg", 0.9));
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        fileInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                resizeImage(file, 240, (resizedDataUrl) => {
+                    car.carImage = resizedDataUrl;
+                    renderImage();
+                });
+            }
+        });
+
+        // 저장 버튼
+        document.getElementById("carForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            car.carNickname = document.getElementById("carNickname").value;
+            car.carYear = document.getElementById("carYear").value;
+            car.carNumber = document.getElementById("carNumber").value;
+
+            currentUser.cars[selectedCarIndex] = car;
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+            alert("차량 정보가 저장되었습니다.");
+            window.location.href = "mypage.html";
+        });
+    </script>
+</body>
+
+</html>
