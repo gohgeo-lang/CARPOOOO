@@ -62,14 +62,19 @@
 
     <!-- 퀵메뉴 -->
     <div class="quick-menu">
-        <div class="quick-item" onclick="location.href='mypage.html#mycar'"><i class="bi bi-car-front-fill"></i>내 차
+        <div class="quick-item" onclick="goMyCar()">
+            <i class="bi bi-car-front-fill"></i>내 차
         </div>
-        <div class="quick-item" onclick="location.href='booking.html'"><i class="bi bi-calendar-event"></i>프리오더</div>
-        <div class="quick-item" onclick="location.href='mypage.html#tickets'"><i
-                class="bi bi-ticket-perforated-fill"></i>이용권</div>
-        <div class="quick-item" onclick="location.href='mypage.html#history'"><i class="bi bi-clock-history"></i>히스토리
+        <div class="quick-item" onclick="location.href='booking.html'">
+            <i class="bi bi-calendar-event"></i>예약하기
         </div>
-    </div>
+        <div class="quick-item" onclick="location.href='mypage.html#tickets'">
+            <i class="bi bi-ticket-perforated-fill"></i>보관함
+        </div>
+        <div class="quick-item" onclick="location.href='mypage.html#history'">
+            <i class="bi bi-clock-history"></i>히스토리
+        </div>
+    </div> <!-- ✅ quick-menu 닫기 -->
 
     <!-- 배너 캐러셀 -->
     <div id="promoCarousel" class="carousel slide px-3" data-bs-ride="carousel">
@@ -140,13 +145,13 @@
 
     <!-- 세차상품 -->
     <div class="container mt-4">
-        <h5 class="fw-bold mb-3">세차 상품</h5>
+        <h5 class="fw-bold mb-3">세차 상품권</h5>
         <div class="row">
             <div class="col-12 col-md-4">
                 <div class="card product-card">
                     <div class="card-body text-center">
-                        <h6 class="fw-bold">단발 세차</h6>
-                        <p>1회 내/외부 세차</p>
+                        <h6 class="fw-bold">일반 세차</h6>
+                        <p>1회 외부 세차</p>
                         <p class="fw-bold text-primary">25,000원~</p>
                         <button class="btn btn-primary btn-sm">예약하기</button>
                     </div>
@@ -158,16 +163,6 @@
                         <h6 class="fw-bold">정기 세차</h6>
                         <p>월 4회 / 8회 패키지</p>
                         <p class="fw-bold text-primary">35,000원~</p>
-                        <button class="btn btn-primary btn-sm">예약하기</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="card product-card">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">실내 세차 옵션</h6>
-                        <p>내부 청소 & 코팅</p>
-                        <p class="fw-bold text-primary">+10,000원</p>
                         <button class="btn btn-primary btn-sm">예약하기</button>
                     </div>
                 </div>
@@ -190,6 +185,27 @@
         <div><i class="bi bi-heart-fill"></i>찜</div>
         <div onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
     </div>
+
+
+    <script>
+        function goMyCar() {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+            if (!currentUser) {
+                alert("로그인 후 이용 가능합니다.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            if (!currentUser.cars || currentUser.cars.length === 0) {
+                // 차량 등록 페이지
+                window.location.href = "car-register.html";
+            } else {
+                // 등록된 차량이 있다면 프로필 페이지로 이동
+                window.location.href = "car-profile.html";
+            }
+        }
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>

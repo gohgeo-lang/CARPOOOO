@@ -7,7 +7,6 @@ body {
     color: #333;
 }
 
-
 h4,
 h5,
 h6 {
@@ -34,7 +33,6 @@ h6 {
 .header h4,
 .header p {
     color: #fff !important;
-    /* ✅ 항상 흰색 고정 */
 }
 
 /* ========= 카드 ========= */
@@ -156,9 +154,9 @@ h6 {
 }
 
 .quick-item i {
-    font-size: 24px;
+    font-size: 26px;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 0.5px;
     color: #007bff;
 }
 
@@ -203,64 +201,4 @@ h6 {
 
 .product-card:hover {
     transform: translateY(-3px);
-}
-
-/* ========= Intro 화면 ========= */
-.intro {
-    height: 100vh;
-    /* 화면 꽉 채우기 */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #1e90ff, #007bff);
-    color: white;
-    text-align: center;
-
-    opacity: 0;
-    /* 시작은 투명 */
-    animation: fadeInOut 4s ease forwards;
-    /* 4초짜리 애니메이션 실행 */
-}
-
-.intro img {
-    margin-bottom: 20px;
-    border-radius: 20px;
-}
-
-.intro h2 {
-    color: #fff;
-    font-size: 2rem;
-}
-
-.intro p {
-    color: #f1f1f1;
-    margin-bottom: 20px;
-}
-
-.intro .btn {
-    border-radius: 25px;
-    font-weight: bold;
-}
-
-@keyframes fadeInOut {
-    0% {
-        opacity: 0;
-    }
-
-    20% {
-        opacity: 1;
-    }
-
-    /* 0~0.8s: 서서히 나타남 */
-    70% {
-        opacity: 1;
-    }
-
-    /* 0.8s~3.2s: 유지 */
-    100% {
-        opacity: 0;
-    }
-
-    /* 3.2s~4s: 서서히 사라짐 */
 }

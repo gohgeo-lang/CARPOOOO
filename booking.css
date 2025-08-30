@@ -1,0 +1,16 @@
+/* ========= 예약 페이지 전용 ========= */
+.step {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.4s ease-in-out;
+}
+
+.step.active {
+    display: block;
+    opacity: 1;
+}
+
+#calendar {
+    min-height: 500px;
+    margin: 20px 0;
+}
