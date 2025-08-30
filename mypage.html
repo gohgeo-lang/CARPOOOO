@@ -4,105 +4,345 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CARPOOOO - 마이페이지</title>
+    <title>CARPOOOO - 설정</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
+
+    <style>
+        /* ========= 마이페이지 전용 ========= */
+
+        /* 컨텐츠 보정 */
+        body.mypage {
+            padding-top: 60px;
+            /* 헤더 높이에 맞춤 */
+        }
+
+        /* 헤더 오버라이드 */
+        body.mypage .header {
+            display: flex;
+            align-items: center;
+            /* 세로 중앙 정렬 */
+            justify-content: flex-start;
+            gap: 8px;
+            /* 버튼과 타이틀 간격 */
+            background: #fff;
+            height: 60px;
+            padding: 0 15px;
+        }
+
+        body.mypage #headerTitle {
+            font-size: 20px;
+            color: #000;
+            margin: 0;
+            /* margin-left 제거 */
+            display: none;
+            /* 스크롤 시에만 표시 */
+        }
+
+        .back-btn {
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        /* 컨텐츠 레이아웃 */
+        .container {
+            padding: 0;
+        }
+
+        /* 프로필 영역 */
+        .profile-card {
+            background: #fff;
+            padding: 20px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* 헤더와 연결 느낌 */
+        .profile-card.no-top-radius {
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+            margin-top: 0;
+        }
+
+        /* 섹션 제목 */
+        .settings-section h6 {
+            font-weight: bold;
+            font-size: 13px;
+            padding: 8px 15px;
+            margin: 0;
+            color: #666;
+            background: #f5f5f5;
+        }
+
+        /* 리스트 */
+        .settings-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .list-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 15px;
+            text-decoration: none;
+            color: #000;
+            border-bottom: 1px solid #eee;
+            min-height: 44px;
+            transition: background-color .15s ease, transform .05s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .list-link:hover {
+            background: #f7f7f9;
+        }
+
+        .list-link:active,
+        .list-link.pressed {
+            background: #eef3ff;
+            transform: translateY(1px);
+        }
+
+        .list-link:focus-visible {
+            outline: 2px solid #0d6efd33;
+            outline-offset: 2px;
+            border-radius: 6px;
+        }
+
+        /* 아이콘 */
+        .list-link i {
+            color: #999;
+            transition: transform .05s ease, color .15s ease;
+        }
+
+        .list-link:hover i {
+            color: #777;
+        }
+
+        .list-link:active i,
+        .list-link.pressed i {
+            transform: translateX(2px);
+        }
+
+        /* 로그아웃 (리스트 항목처럼) */
+        .logout-item {
+            margin-top: 10px;
+        }
+
+        .logout-item a {
+            display: block;
+            text-align: center;
+            padding: 15px;
+            color: #8d8d8d;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color .15s ease;
+        }
+
+        .logout-item a:hover {
+            background: #bfd6ff;
+        }
+
+        .logout-item a:active {
+            background: #8ea8d5;
+            color: white;
+            transform: translateY(1px);
+        }
+    </style>
 </head>
 
-<body>
+<body class="mypage">
+    <!-- 헤더 -->
     <div class="header">
-        <h4 class="fw-bold">마이페이지</h4>
-        <p id="welcomeMsg" class="mb-0"></p>
-        <button id="logoutBtn" class="btn btn-sm btn-outline-light mt-2">로그아웃</button>
+        <button class="back-btn" onclick="history.back()">
+            <i class="bi bi-chevron-left fs-3"></i>
+        </button>
+        <h4 id="headerTitle">설정</h4>
     </div>
 
-    <div class="container mt-4">
-        <!-- 리워드 -->
-        <div class="card p-3 mb-3 text-center">
-            <h6 class="fw-bold">리워드 & 충전금</h6>
-            <p class="mb-1">보유 포인트: <span id="userPoints" class="fw-bold text-primary">0P</span></p>
-            <button class="btn btn-sm btn-primary" onclick="chargePoints()">충전하기</button>
+    <!-- 프로필 (헤더와 연결) -->
+    <div class="profile-card no-top-radius">
+        <div>
+            <div class="d-flex align-items-center mb-1">
+                <h6 id="userName" class="fw-bold mb-0 me-2">사용자명</h6>
+                <span id="userId" class="text-muted small">@userid</span>
+            </div>
+            <p id="userPhone" class="small text-muted mb-1">010-0000-0000</p>
+            <p id="userCredit" class="fw-bold text-primary mb-0">Credit: 0P</p>
         </div>
-
-        <!-- 내 차 -->
-        <div class="card p-3 mb-3">
-            <h6 class="fw-bold"><i class="bi bi-car-front-fill me-1"></i> 내 차</h6>
-            <div id="myCar">등록된 차량 없음</div>
+        <div>
+            <img id="profileImage" src="https://placehold.co/60x60" class="rounded-circle"
+                style="width:60px; height:60px; object-fit:cover; cursor:pointer;">
+            <input type="file" id="profileInput" accept="image/*" style="display:none;">
         </div>
+    </div>
 
-        <!-- 이용권 -->
-        <div class="card p-3 mb-3">
-            <h6 class="fw-bold"><i class="bi bi-ticket-perforated-fill me-1"></i> 이용권</h6>
-            <p id="myTickets">보유 이용권 없음</p>
-        </div>
+    <!-- 아래부터 컨텐츠 -->
+    <div class="container mt-3">
 
-        <!-- 이용 내역 -->
-        <div class="card p-3 mb-3">
-            <h6 class="fw-bold"><i class="bi bi-clock-history me-1"></i>최근이용내역</h6>
-            <ul id="myHistory" class="list-group list-group-flush">
-                <li class="list-group-item">내역 없음</li>
+        <!-- 계정 관리 -->
+        <div class="settings-section">
+            <h6>계정 관리</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">계정 설정 <i class="bi bi-chevron-right"></i></a></li>
             </ul>
         </div>
-    </div>
 
-    <div class="footer">
-        <p>© 2025 CARPOOOO. All rights reserved.</p>
-    </div>
+        <!-- 내 장소 -->
+        <div class="settings-section">
+            <h6>내 장소 설정</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">내 장소 등록/관리 <i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </div>
 
-    <div class="tabbar">
-        <div onclick="location.href='search.html'"><i class="bi bi-search"></i>검색</div>
-        <div onclick="location.href='booking.html'"><i class="bi bi-calendar-check"></i>예약</div>
-        <div onclick="location.href='index.html'"><i class="bi bi-house-door-fill"></i>홈</div>
-        <div onclick="location.href='wishlist.html'"><i class="bi bi-heart-fill"></i>찜</div>
-        <div class="active" onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
+        <!-- 구독 -->
+        <div class="settings-section">
+            <h6>구독 관리</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">가입하기 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">결제 내역 <i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- 결제 -->
+        <div class="settings-section">
+            <h6>결제 및 할인</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">결제 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">현금영수증 발급 정보 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">내 크레딧 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">모바일 상품권 <i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- 알림 -->
+        <div class="settings-section">
+            <h6>알림</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">혜택 알림 설정 <i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- 이용 정보 -->
+        <div class="settings-section">
+            <h6>이용 정보</h6>
+            <ul class="settings-list">
+                <li><a href="#" class="list-link">약관 및 정책 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">회원 탈퇴하기 <i class="bi bi-chevron-right"></i></a></li>
+                <li><a href="#" class="list-link">앱 버전 v1.0.0 <i class="bi bi-chevron-right"></i></a></li>
+            </ul>
+        </div>
+
+        <!-- 로그아웃 -->
+        <div class="settings-section logout-item">
+            <a href="#" id="logoutBtn">로그아웃</a>
+        </div>
     </div>
 
     <script>
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser) {
-            alert("로그인 후 이용 가능합니다.");
-            window.location.href = "login.html";
-        } else {
-            // 환영 메시지 & 포인트 표시
-            document.getElementById("welcomeMsg").innerText = `${currentUser.name}님 환영합니다 👋`;
-            document.getElementById("userPoints").innerText = (currentUser.points || 0).toLocaleString() + "P";
-
-            // 🚗 내 차 표시
-            const myCarDiv = document.getElementById("myCar");
-            if (currentUser.cars && currentUser.cars.length > 0) {
-                myCarDiv.innerHTML = "";
-                currentUser.cars.forEach(car => {
-                    const p = document.createElement("p");
-                    p.textContent = `${car.carNumber} - ${car.carCompany} ${car.carModel} (${car.carSize})`;
-                    myCarDiv.appendChild(p);
-                });
+        // 스크롤 시 헤더 타이틀 표시
+        window.addEventListener("scroll", () => {
+            const title = document.getElementById("headerTitle");
+            if (window.scrollY > 50) {
+                title.style.display = "block";
             } else {
-                myCarDiv.textContent = "등록된 차량 없음";
+                title.style.display = "none";
             }
+        });
+
+        // 프로필 이미지 업로드
+        // 프로필 이미지 업로드 (리사이즈 + 압축)
+        const profileImage = document.getElementById("profileImage");
+        const profileInput = document.getElementById("profileInput");
+
+        profileImage.addEventListener("click", () => profileInput.click());
+
+        profileInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) resizeAndSaveImage(file);
+        });
+
+        function resizeAndSaveImage(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = function () {
+                    const canvas = document.createElement("canvas");
+                    const ctx = canvas.getContext("2d");
+
+                    const maxSize = 200; // 최대 크기(px)
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxSize) {
+                            height *= maxSize / width;
+                            width = maxSize;
+                        }
+                    } else {
+                        if (height > maxSize) {
+                            width *= maxSize / height;
+                            height = maxSize;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // JPEG로 압축 (품질 0.7)
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+
+                    // localStorage 저장
+                    let currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+                    currentUser.profileImage = dataUrl;
+                    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+
+                    // UI 업데이트
+                    profileImage.src = dataUrl;
+                };
+            };
+            reader.readAsDataURL(file);
         }
 
+
+        // 저장된 데이터 불러오기
+        document.addEventListener("DOMContentLoaded", () => {
+            let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (currentUser) {
+                document.getElementById("userName").innerText = currentUser.name || "사용자";
+                document.getElementById("userId").innerText = "@" + (currentUser.id || "userid");
+                document.getElementById("userCredit").innerText = "Credit: " + (currentUser.points || 0).toLocaleString() + "P";
+                document.getElementById("userPhone").innerText = currentUser.phone || "010-0000-0000";
+                document.getElementById("profileImage").src = currentUser.profileImage || "https://placehold.co/60x60";
+            }
+        });
         // 로그아웃
-        document.getElementById("logoutBtn").addEventListener("click", () => {
+        document.getElementById("logoutBtn").addEventListener("click", (e) => {
+            e.preventDefault();
             localStorage.removeItem("currentUser");
             alert("로그아웃 되었습니다.");
             window.location.href = "index.html";
         });
 
-        // 포인트 충전
-        function chargePoints() {
-            const amount = prompt("충전할 금액을 입력하세요 (예: 10000)");
-            if (!amount || isNaN(amount)) return;
-            currentUser.points = (currentUser.points || 0) + parseInt(amount);
-
-            let users = JSON.parse(localStorage.getItem("users")) || [];
-            users = users.map(u => u.phone === currentUser.phone ? currentUser : u);
-            localStorage.setItem("users", JSON.stringify(users));
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-
-            document.getElementById("userPoints").innerText = currentUser.points.toLocaleString() + "P";
-            alert(`${parseInt(amount).toLocaleString()}원이 충전되었습니다!`);
+        // 모바일 터치 반응 보강
+        function wirePressFeedback() {
+            document.querySelectorAll('.list-link').forEach(el => {
+                el.addEventListener('pointerdown', () => el.classList.add('pressed'));
+                ['pointerup', 'pointerleave', 'pointercancel'].forEach(evt =>
+                    el.addEventListener(evt, () => el.classList.remove('pressed'))
+                );
+            });
         }
+        document.addEventListener('DOMContentLoaded', wirePressFeedback);
     </script>
 </body>
 

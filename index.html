@@ -74,6 +74,24 @@
         color: #0d6efd;
     }
 
+    .side-menu .btn-link {
+        color: #333;
+        text-decoration: none;
+    }
+
+    .side-menu .btn-link:hover {
+        color: #0d6efd;
+    }
+
+    .side-menu h6 {
+        font-size: 1rem;
+    }
+
+    .side-menu p {
+        margin: 0;
+    }
+
+
     /* 오버레이 */
     .overlay {
         display: none;
@@ -93,90 +111,76 @@
 
 
 <body>
-
     <!-- 상단 헤더 -->
     <div class="header">
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <!-- 햄버거 버튼 -->
-            <button id="menuBtn" class="btn btn-sm btn-light"><i class="bi bi-list"></i></button>
-            <!-- 사이드메뉴 -->
-            <div id="sideMenu" class="side-menu">
-                <div class="menu-header">
-                    <h5 class="fw-bold">CARPOOOO</h5>
-                </div>
-                <hr>
-
-                <!-- 서비스메뉴 -->
-                <p class="fw-bold small text-muted mb-1">서비스</p>
-
-                <ul class="menu-list">
-                    <li><a href="car-profile.html"><i class="bi bi-car-front-fill"></i> 내 차</a></li>
-                    <li><a href="booking.html"><i class="bi bi-calendar-event"></i> 예약하기</a></li>
-                    <li><a href="mypage.html#tickets"><i class="bi bi-ticket-perforated-fill"></i> 보관함</a></li>
-                    <li><a href="mypage.html#history"><i class="bi bi-clock-history"></i> 히스토리</a></li>
-                    <li><a href="event.html"><i class="bi bi-gift-fill"></i> 이벤트</a></li>
-                    <li><a href="support.html"><i class="bi bi-headset"></i> 1:1 문의</a></li>
-                </ul>
-
-                <hr>
-
-                <!-- 약관 및 정책 -->
-                <div class="menu-policy">
-                    <p class="fw-bold small text-muted mb-1">약관 및 정책</p>
-                    <ul>
-                        <li><a href="terms.html">이용약관</a></li>
-                        <li><a href="privacy.html">개인정보 처리방침</a></li>
-                        <li><a href="finance-terms.html">카푸 전자금융거래 이용약관(선불)</a></li>
-                        <li><a href="location-terms.html">위치기반 서비스 이용약관</a></li>
-                        <li><a href="location-privacy.html">개인위치정보 처리방침</a></li>
-                    </ul>
-                </div>
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- 로고 -->
+            <h4 class="m-0 fw-bold">CARPOOOO</h4>
+            <!-- 버튼 그룹-->
+            <div class="d-flex align-items-center gap-1">
+                <!-- 로그인 상태 영역 -->
+                <div id="userStatus" class="me-2"></div>
+                <!-- 알림창 -->
+                <button class="btn btn-sm btn-link text-white"><i class="bi bi-ticket-perforated fs-4"></i></button>
+                <!-- 알림창 -->
+                <button class="btn btn-sm btn-link text-white"><i class="bi bi-bell fs-4"></i></button>
+                <!-- 햄버거 버튼 -->
+                <button id="menuBtn" class="btn btn-sm btn-link text-white"><i class="bi bi-list fs-3"></i></button>
             </div>
-            <div class="text-center flex-grow-1">
-                <h4 class="m-0 fw-bold">CARPOOOO</h4>
-                <p class="mt-1 mb-0 small text-light">당신의 차를 위한 스마트 케어</p>
-            </div>
-            <!-- 알림창 -->
-            <button class="btn btn-sm btn-light"><i class="bi bi-bell"></i></button>
+        </div>
+    </div>
+    </div>
+
+    <!-- 사이드메뉴 -->
+    <div id="sideMenu" class="side-menu">
+        <!-- 상단: 설정 & 알림 -->
+        <div class="d-flex justify-content-end gap-2 mb-3">
+            <!-- 기어 아이콘 → 마이페이지 이동 -->
+            <a href="mypage.html" class="btn btn-sm btn-link text-dark">
+                <i class="bi bi-gear fs-5"></i>
+            </a>
+
+            <!-- 알림 아이콘 → 알림 페이지 이동 -->
+            <a href="notifications.html" class="btn btn-sm btn-link text-dark">
+                <i class="bi bi-bell fs-5"></i>
+            </a>
         </div>
 
-        <!-- 로그인 상태 영역 -->
-        <div id="userStatus" class="mt-4"></div>
+        <!-- 유저 프로필 영역 -->
+        <div class="mb-4" id="sideUserArea"></div>
 
-        <div class="search-bar mt-3"><i class="bi bi-search"></i> 내 차를 반짝이게 해보세요</div>
+
+        <hr>
+
+        <!-- 서비스메뉴 -->
+        <p class="fw-bold small text-muted mb-1">서비스</p>
+        <ul class="menu-list">
+            <li><a href="car-profile.html">내 차</a></li>
+            <li><a href="booking.html">예약하기</a></li>
+            <li><a href="mypage.html#tickets">보관함</a></li>
+            <li><a href="mypage.html#history"> 히스토리</a></li>
+            <li><a href="event.html">이벤트</a></li>
+            <li><a href="support.html">1:1 문의</a></li>
+            <li><a href="support.html">친구 초대하기</a></li>
+        </ul>
+
+        <hr>
+
+        <!-- 약관 및 정책 -->
+        <div class="menu-policy">
+            <p class="fw-bold small text-muted mb-1">약관 및 정책</p>
+            <ul>
+                <li><a href="terms.html">이용약관</a></li>
+                <li><a href="privacy.html">개인정보 처리방침</a></li>
+                <li><a href="finance-terms.html">카푸 전자금융거래 이용약관(선불)</a></li>
+                <li><a href="location-terms.html">위치기반 서비스 이용약관</a></li>
+                <li><a href="location-privacy.html">개인위치정보 처리방침</a></li>
+            </ul>
+        </div>
     </div>
+
     <!-- 오버레이 -->
     <div id="overlay" class="overlay"></div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const userStatus = document.getElementById("userStatus");
-            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-
-            if (currentUser) {
-                // 로그인 된 상태
-                userStatus.innerHTML = `
-        <div class="d-flex justify-content-between align-items-center">
-          <span>
-            <strong>${currentUser.name}</strong>님 환영합니다! | 
-            리워드: <span class="fw-bold text-warning">0P</span>
-          </span>
-        </div>
-    `;
-            }
-            else {
-                // 비로그인 상태
-                userStatus.innerHTML = `
-        <div class="text-center">
-          <a href="login.html" class="text-light text-decoration-none fw-light">
-            로그인하고 더 많은 서비스를 이용해보세요
-          </a>
-        </div>
-      `;
-            }
-
-        });
-    </script>
 
     <!-- 퀵메뉴 -->
     <div class="quick-menu">
@@ -192,7 +196,7 @@
         <div class="quick-item" onclick="location.href='mypage.html#history'">
             <i class="bi bi-clock-history"></i>히스토리
         </div>
-    </div> <!-- ✅ quick-menu 닫기 -->
+    </div>
 
     <!-- 배너 캐러셀 -->
     <div id="promoCarousel" class="carousel slide px-3" data-bs-ride="carousel">
@@ -294,18 +298,62 @@
         <p>고객센터: 010-1234-5678 | info@carpoo.com</p>
         <p>사업자등록번호: 123-45-67890</p>
     </div>
-
-    <!-- 하단 탭바 -->
-    <div class="tabbar">
-        <div><i class="bi bi-search"></i>검색</div>
-        <div><i class="bi bi-calendar-check"></i>예약</div>
-        <div class="active"><i class="bi bi-house-door-fill"></i>홈</div>
-        <div><i class="bi bi-heart-fill"></i>찜</div>
-        <div onclick="location.href='mypage.html'"><i class="bi bi-person-circle"></i>마이</div>
-    </div>
-
-
+    <!-- 스크립트 모음-->
     <script>
+        // 헤더 + 사이드메뉴 렌더링 함수
+        function renderUserUI() {
+            const userStatus = document.getElementById("userStatus");
+            const sideUserArea = document.getElementById("sideUserArea");
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+
+            // 헤더: 프로필사진만
+            if (userStatus) {
+                if (currentUser) {
+                    userStatus.innerHTML = `
+          <div class="d-flex align-items-center">
+            <img src="${currentUser.profileImage || 'https://placehold.co/40x40'}" 
+                 alt="프로필" 
+                 class="rounded-circle me-0" 
+                 style="width:25px; height:25px; object-fit:cover;">
+          </div>
+        `;
+                } else {
+                    // 비로그인 상태 → 로그인 안내 문구
+                    userStatus.innerHTML = `
+          <div class="text-center">
+            <a href="login.html" class="text-light text-decoration-none fw-light">
+              로그인하고 더 많은 서비스를 이용해보세요
+            </a>
+          </div>
+        `;
+                }
+            }
+
+            // 사이드메뉴: 이름/아이디/크레딧 or 로그인 안내
+            if (sideUserArea) {
+                if (currentUser) {
+                    sideUserArea.innerHTML = `
+                  <h6 class="fw-bold mb-1">${currentUser.name || "사용자"}</h6>
+                  <p class="text-muted mb-1">@${currentUser.id || "userid"}</p>
+                  <p class="fw-bold text-primary">Credit: ${(currentUser.points || 0).toLocaleString()}P</p>
+                `;
+                } else {
+                    sideUserArea.innerHTML = `
+                  <div class="text-center">
+                    <a href="login.html" class="text-decoration-none text-muted small">
+                      로그인하고 더 많은 서비스를 이용해보세요
+                    </a>
+                  </div>
+                `;
+                }
+            }
+        }
+
+        // 초기 실행
+        document.addEventListener("DOMContentLoaded", renderUserUI);
+        // 🔥 뒤로가기 등 history navigation 시에도 실행
+        window.addEventListener("pageshow", renderUserUI);
+
         function goMyCar() {
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
@@ -323,6 +371,7 @@
                 window.location.href = "car-profile.html";
             }
         }
+
         // 사이드메뉴 열고 닫기
         const menuBtn = document.getElementById("menuBtn");
         const sideMenu = document.getElementById("sideMenu");
@@ -340,6 +389,7 @@
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>
