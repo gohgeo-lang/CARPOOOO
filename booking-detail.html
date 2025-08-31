@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CARPOOOO - 예약 상세</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style.css" rel="stylesheet">
+    <style>
+        body.detail {
+            padding-top: 60px;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            height: 60px;
+            padding: 0 15px;
+        }
+
+        .header h4 {
+            font-size: 20px;
+            margin: 0;
+        }
+
+        .detail-card {
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
+        }
+    </style>
+</head>
+
+<body class="detail">
+    <!-- 상단 헤더 -->
+    <div class="header">
+        <button class="btn btn-link text-dark me-1" onclick="history.back()">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+        <h4>예약 상세</h4>
+    </div>
+
+    <div class="container mt-3">
+        <div class="detail-card">
+            <h5 id="courseTitle" class="fw-bold"></h5>
+            <div id="bookingInfo" class="mt-3"></div>
+            <hr>
+            <div id="actionButtons" class="mt-3"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const idx = parseInt(localStorage.getItem("viewBookingIndex"), 10);
+
+            if (!currentUser || !currentUser.history || isNaN(idx)) {
+                document.getElementById("bookingInfo").innerHTML =
+                    "<p class='text-muted'>예약 데이터를 불러올 수 없습니다.</p>";
+                return;
+            }
+
+            const booking = currentUser.history[idx];
+            if (!booking) {
+                document.getElementById("bookingInfo").innerHTML =
+                    "<p class='text-muted'>예약 데이터를 찾을 수 없습니다.</p>";
+                return;
+            }
+
+            document.getElementById("courseTitle").innerText = booking.course || "세차 코스";
+            document.getElementById("bookingInfo").innerHTML = `
+            <p>${booking.dateStr || booking.date || "-"} ${booking.time || ""}</p>
+            <p>${booking.carNumber || ""} · ${booking.carCompany || ""} ${booking.carModel || ""} (${booking.carSize || ""})</p>
+            <p>${booking.address || ""} ${booking.addressDetail || ""}</p>
+            <p>${booking.finalPrice ? booking.finalPrice.toLocaleString() : 0}원</p>
+            ${booking.washType === "정기세차" && booking.months
+                    ? `<p><i class="bi bi-repeat"></i> 구독기간: ${booking.months}개월</p>` : ""}
+            <p>상태: ${booking.status || "예약대기"}</p>
+    `;
+
+
+            const actionDiv = document.getElementById("actionButtons");
+            if (booking.status === "예약대기") {
+                actionDiv.innerHTML = `
+    <button class="btn btn-primary" onclick="editBooking(${idx})">수정하기</button>
+    <button class="btn btn-danger" onclick="cancelBooking(${idx})">취소하기</button>
+    `;
+            } else if (booking.status === "예약확정") {
+                const now = new Date();
+                const bookingDate = new Date(`${booking.dateStr} ${booking.time}`);
+                const diffDays = (bookingDate - now) / (1000 * 60 * 60 * 24);
+
+                if (diffDays <= 0) {
+                    actionDiv.innerHTML = ` <button class="btn btn-danger" onclick="cancelBooking(${idx}, true)">취소하기
+        (수수료 발생)</button>
+        `;
+                } else {
+                    actionDiv.innerHTML = `
+        <button class="btn btn-danger" onclick="cancelBooking(${idx})">취소하기</button>
+        `;
+                }
+            } else if (booking.status === "완료") {
+                actionDiv.innerHTML = `
+        <button class="btn btn-secondary" onclick="rebook(${idx})">재예약하기</button>
+        `;
+            } else if (booking.status === "취소") {
+                actionDiv.innerHTML = `<p class="text-muted">취소된 예약입니다.</p>`;
+            }
+        });
+
+        function editBooking(idx) {
+            localStorage.setItem("editBookingIndex", idx);
+            window.location.href = "booking.html";
+        }
+        function rebook(idx) {
+            localStorage.setItem("rebookIndex", idx);
+            window.location.href = "booking.html";
+        }
+        function cancelBooking(idx, isSameDay = false) {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            if (!currentUser || !currentUser.history) return;
+
+            if (isSameDay) {
+                if (!confirm("당일 취소는 수수료가 부과됩니다. 그래도 취소하시겠습니까?")) return;
+            } else {
+                if (!confirm("정말 예약을 취소하시겠습니까?")) return;
+            }
+
+            currentUser.history[idx].status = "취소";
+            currentUser.history[idx].cancelDate = new Date().toLocaleString();
+            currentUser.history[idx].cancelFee = isSameDay ? "수수료 발생" : "없음";
+
+            localStorage.setItem("currentUser", JSON.stringify(currentUser));
+            alert("예약이 취소되었습니다.");
+            window.location.href = "usage.html";
+        }
+    </script>
+</body>
+
+</html>

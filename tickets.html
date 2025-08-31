@@ -119,6 +119,34 @@
             <button class="btn-use">사용하기</button>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+            const container = document.querySelector(".container");
+            container.innerHTML = "";
+
+            if (!currentUser || !currentUser.coupons || currentUser.coupons.length === 0) {
+                container.innerHTML = "<p class='text-muted'>보관함에 쿠폰이 없습니다.</p>";
+                return;
+            }
+
+            currentUser.coupons.forEach(coupon => {
+                const div = document.createElement("div");
+                div.className = "coupon-card";
+                div.innerHTML = `
+                <div>
+                    <h5 class="coupon-title">${coupon.title}</h5>
+                    <p class="coupon-desc">${coupon.text}</p>
+                    <p class="coupon-exp">~ ${coupon.expire}</p>
+                </div>
+                <button class="btn-use">사용하기</button>
+            `;
+                container.appendChild(div);
+            });
+        });
+    </script>
+
 </body>
 
 </html>

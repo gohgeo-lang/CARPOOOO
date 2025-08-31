@@ -122,6 +122,18 @@
         </li>
     </ul>
 
+    <!-- 배지설명 -->
+    <div class="container mt-2">
+        <div class="alert alert-light border small text-muted" role="alert">
+            <ul class="mb-0 ps-3">
+                <li><b>예약대기</b>: 예약 수정 및 취소 가능 (위약금 없음)</li>
+                <li><b>예약확정</b>: 예약 수정 불가, 취소는 가능 (시점에 따라 위약금 발생)</li>
+                <li><b>완료</b>: 재예약만 가능</li>
+                <li><b>취소됨</b>: 기록 확인만 가능</li>
+            </ul>
+        </div>
+    </div>
+
     <!-- 탭 콘텐츠 -->
     <div class="tab-content container mt-3">
         <!-- 구독 내역 -->
@@ -172,7 +184,7 @@
             </div>
         </div>
     </div>
-
+    <!-- 예약 카드 생성 JS -->
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
@@ -182,38 +194,33 @@
             }
 
             const history = currentUser.history;
-            const subContainer = document.getElementById("subContainer");
             const resContainer = document.getElementById("reservations");
             const doneContainer = document.getElementById("completed");
+            const subContainer = document.getElementById("subContainer");
 
-            subContainer.innerHTML = "";
             resContainer.innerHTML = "";
             doneContainer.innerHTML = "";
+            subContainer.innerHTML = "";
 
             history.forEach((h, idx) => {
                 const card = document.createElement("div");
                 card.className = "booking-card";
 
-                // 상태 뱃지
+                // 상태별 뱃지
                 let badgeClass = "badge-pending";
                 let badgeText = "예약대기";
                 if (h.status === "예약확정") {
-                    badgeClass = "badge-confirmed";
-                    badgeText = "예약확정";
+                    badgeClass = "badge-confirmed"; badgeText = "예약확정";
                 } else if (h.status === "완료") {
-                    badgeClass = "badge-done";
-                    badgeText = "완료";
+                    badgeClass = "badge-done"; badgeText = "완료";
                 } else if (h.status === "취소") {
-                    badgeClass = "badge-cancel";
-                    badgeText = "취소됨";
+                    badgeClass = "badge-cancel"; badgeText = "취소됨";
                 }
 
-                // 버튼 로직
+                // 상태별 버튼
                 let actionButtons = "";
                 if (h.status === "예약대기") {
                     actionButtons = `
-                <button class="btn btn-sm btn-outline-primary" onclick="editBooking(${idx})">수정하기</button>
-                <button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx})">취소하기</button>
             `;
                 } else if (h.status === "예약확정") {
                     const now = new Date();
@@ -221,47 +228,57 @@
                     const diffDays = (bookingDate - now) / (1000 * 60 * 60 * 24);
 
                     if (diffDays <= 0) {
-                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx}, true)">취소하기(수수료 부과)</button>`;
+                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx}, true)">취소하기(수수료)</button>`;
                     } else {
                         actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx})">취소하기</button>`;
                     }
                 } else if (h.status === "완료") {
-                    actionButtons = `<button class="btn btn-sm btn-outline-secondary">재예약하기</button>`;
+                    actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="rebook(${idx})">재예약하기</button>`;
                 }
 
-                // 카드 HTML
+                // 카드 본문
                 card.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0">${h.course || "세차 코스"}</h6>
-                <span class="badge-status ${badgeClass}">${badgeText}</span>
+              <h6 class="mb-0">${h.course || "세차 코스"}</h6>
+              <span class="badge-status ${badgeClass}">${badgeText}</span>
             </div>
             <p class="booking-info"><i class="bi bi-calendar-event"></i> ${h.dateStr} ${h.time}</p>
             <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.carNumber} · ${h.carCompany} ${h.carModel}</p>
-            <p class="booking-info"><i class="bi bi-cash"></i> ${h.finalPrice?.toLocaleString() || 0}원</p>
-            <div class="mt-2">
-                ${actionButtons}
-            </div>
+            <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.address || ""} ${h.addressDetail || ""}</p>
+          <p class="booking-info"><i class="bi bi-cash"></i> ${h.finalPrice?.toLocaleString() || 0}원</p>
+          <div class="mt-2">${actionButtons}</div>
         `;
 
-                // 구독 내역이라면 별도로 subContainer에도 표시
-                if (h.washType === "정기세차" && h.months) {
+                // 구독 카드 별도 표시
+                if (h.washType === "정기세차" && h.months && h.months > 0) {
                     const subCard = document.createElement("div");
                     subCard.className = "booking-card";
                     subCard.innerHTML = `
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">정기 세차 구독 (${h.months}개월)</h6>
-                    <span class="badge-status badge-pending">구독 중</span>
-                </div>
-                <p class="booking-info"><i class="bi bi-calendar-event"></i> 시작일: ${h.dateStr}</p>
-                <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.carNumber} · ${h.carCompany} ${h.carModel}</p>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-outline-danger">구독 해지</button>
-                </div>
-            `;
+      <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="mb-0">정기 세차 구독 (${h.months}개월)</h6>
+          <span class="badge-status badge-pending">구독 중</span>
+      </div>
+      <p class="booking-info"><i class="bi bi-calendar-event"></i> 시작일: ${h.dateStr}</p>
+      <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.carNumber} · ${h.carCompany} ${h.carModel}</p>
+      <div class="mt-2">
+          <button class="btn btn-sm btn-outline-danger">구독 해지</button>
+      </div>
+    `;
                     subContainer.appendChild(subCard);
                 }
 
-                // 상태별 분류
+                card.addEventListener("click", (e) => {
+                    if (e.target.tagName === "BUTTON") return; // 버튼 클릭은 그대로 동작
+                    viewBooking(idx); // 카드 클릭은 항상 상세페이지 이동
+                });
+
+                function viewBooking(idx) {
+                    localStorage.setItem("viewBookingIndex", idx);
+                    window.location.href = "booking-detail.html";
+                }
+
+
+                // 상태별 컨테이너 배치
                 if (h.status === "완료") {
                     doneContainer.appendChild(card);
                 } else {
@@ -269,14 +286,16 @@
                 }
             });
 
-            // 구독 없으면 탭 숨김
+            // 구독 내역 없으면 탭 숨김
             if (subContainer.innerHTML.trim() === "") {
                 document.getElementById("sub-tab").style.display = "none";
                 document.getElementById("subscription").style.display = "none";
             }
         });
 
-        // 취소 함수
+
+
+        // 버튼 함수
         function cancelBooking(idx, isSameDay = false) {
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
             if (!currentUser || !currentUser.history) return;
@@ -296,12 +315,17 @@
             location.reload();
         }
 
-        // 수정 함수 (예약대기 상태에서만 사용)
         function editBooking(idx) {
             localStorage.setItem("editBookingIndex", idx);
-            window.location.href = "booking.html"; // 수정 페이지로 이동 (booking.html 재사용)
+            window.location.href = "booking.html";
+        }
+
+        function rebook(idx) {
+            localStorage.setItem("rebookIndex", idx);
+            window.location.href = "booking.html";
         }
     </script>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

@@ -257,7 +257,6 @@
             }
         });
 
-        // 프로필 이미지 업로드
         // 프로필 이미지 업로드 (리사이즈 + 압축)
         const profileImage = document.getElementById("profileImage");
         const profileInput = document.getElementById("profileInput");
@@ -298,8 +297,8 @@
                     canvas.height = height;
                     ctx.drawImage(img, 0, 0, width, height);
 
-                    // JPEG로 압축 (품질 0.7)
-                    const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+                    // JPEG로 압축 (품질 0.5)
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.5);
 
                     // localStorage 저장
                     let currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
