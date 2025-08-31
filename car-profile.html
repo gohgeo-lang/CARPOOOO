@@ -17,8 +17,6 @@
             background: #1E90FF;
             /* 브랜드 파란색 */
             color: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .header-center {
@@ -186,14 +184,19 @@
 
     <!-- 상단 헤더 -->
     <div class="header">
+        <!-- 뒤로가기 버튼 -->
+        <button class="btn btn-link text-white me-2" onclick="goBack()" style="font-size:1.2rem;">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
         <div>
             <h4 class="fw-bold mb-0">차고</h4>
         </div>
         <button type="submit" form="carForm" class="btn-save-top">
             <i class="bi bi-trash3"></i>
         </button>
-
     </div>
+
 
     <div class="container mt-4" style="max-width:700px;">
         <div id="carCards"></div>
@@ -205,6 +208,22 @@
     </div>
 
     <script>
+        //뒤로가기
+        function goBack() {
+            const ref = document.referrer;
+
+            // 이전 페이지가 car-detail이면 홈으로
+            if (ref.includes("car-detail.html")) {
+                window.location.href = "index.html";
+            } else if (ref) {
+                history.back();
+            } else {
+                window.location.href = "index.html";
+            }
+        }
+
+
+
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (!currentUser || !currentUser.cars || currentUser.cars.length === 0) {
             alert("등록된 차량이 없습니다.");

@@ -7,10 +7,20 @@
     <title>CARPOOOO - 세차 예약하기</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
     <link href="style.css" rel="stylesheet">
     <link href="booking.css" rel="stylesheet">
     <style>
+        body.booking .header {
+            background: #1a7aff;
+            color: #000;
+            border-bottom: 1px solid #eee;
+        }
+
+        body.booking .header h4 {
+            color: #000;
+            font-size: 20px;
+        }
+
         .step {
             display: none;
             opacity: 0;
@@ -26,16 +36,70 @@
             min-height: 500px;
             margin: 20px 0;
         }
+
+        /*새로 추가한 캘린더 설정*/
+        /* 날짜 바 */
+        #dateBar {
+            display: flex;
+            gap: 10px;
+            padding: 10px 0;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            /* 모바일 부드러운 스크롤 */
+            max-width: 100%;
+            /* 반드시 부모 너비 제한 */
+        }
+
+        .date-item {
+            flex: 0 0 auto;
+            text-align: center;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: #f1f3f5;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 70px;
+        }
+
+        .date-item.active {
+            background: #1a7aff;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* 시간 슬롯 */
+        .slot-btn {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .slot-btn.active {
+            border-color: #1a7aff;
+            background: #eaf3ff;
+        }
+
+        .slot-btn.disabled {
+            color: #aaa;
+            background: #f5f5f5;
+            pointer-events: none;
+        }
     </style>
 </head>
 
-<body>
+<body class="booking">
     <!-- 상단 헤더 -->
-    <div class="header">
-        <div>
-            <h4 class="fw-bold mb-0">세차 예약하기</h4>
-        </div>
+    <div class="header d-flex align-items-center px-3" style="height:60px;">
+        <button class="btn btn-link text-white me-2" onclick="goBackStep()">
+            <i class="bi bi-chevron-left fs-4"></i>
+        </button>
+        <h4 class="m-0 fw-bold text-white">세차 예약하기</h4>
     </div>
+
 
     <div class="container mt-4">
         <!-- 진행바 -->
@@ -74,13 +138,30 @@
                 function execDaumPostcode() {
                     new daum.Postcode({
                         oncomplete: function (data) {
+                            // 도로명 주소
                             document.getElementById("address").value = data.address;
+
+                            // 상세주소 입력란 자동 focus
+                            const detailInput = document.getElementById("addressDetail");
+                            detailInput.focus();
+
+                            //팝업 닫히고 상세주소까지 입력했을 때 Step2 이동
+                            detailInput.addEventListener("blur", () => {
+                                if (
+                                    document.getElementById("name").value.trim() &&
+                                    document.getElementById("phone").value.trim() &&
+                                    document.getElementById("address").value.trim() &&
+                                    document.getElementById("addressDetail").value.trim()
+                                ) {
+                                    nextStep(2);
+                                }
+                            }, { once: true }); // blur 이벤트 중복 방지
                         }
                     }).open();
                 }
+
             </script>
             <input type="text" class="form-control mb-2" id="addressDetail" placeholder="상세 위치 (예: 아파트 동/호)">
-            <button class="btn btn-primary w-100 mt-3" onclick="nextStep(2)">다음</button>
         </div>
 
         <!-- Step 2: 차량 정보 -->
@@ -107,8 +188,6 @@
                     <div class="alert alert-info" id="carSizeBox" style="display:none;"></div>
                 </div>
             </div>
-            <button class="btn btn-secondary mt-3" onclick="prevStep(1)">이전</button>
-            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(3)">다음</button>
         </div>
         <!-- Step3 -->
         <div class="step" id="step3">
@@ -153,45 +232,57 @@
             <!-- 코스 설명 -->
             <div id="courseDescription" class="mt-3 text-muted small"></div>
 
-            <!-- 버튼 추가 -->
-            <button class="btn btn-secondary mt-3" onclick="prevStep(2)">이전</button>
-            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(4)">다음</button>
-
         </div>
-
 
 
         <!-- Step 4: 날짜 & 시간 -->
         <div class="step" id="step4">
-            <h5>📅 예약 날짜 & 시간</h5>
-            <div id="calendar"></div>
-            <div id="timeSlots" class="mt-3"></div>
-            <button class="btn btn-secondary mt-3" onclick="prevStep(3)">이전</button>
-            <button class="btn btn-primary mt-3 float-end" onclick="nextStep(5)">다음</button>
+            <h5>예약 날짜 & 시간</h5>
+
+            <!-- 날짜 선택 바 -->
+            <div id="dateBar" class="d-flex gap-2 overflow-auto mb-3"></div>
+
+            <!-- 시간 슬롯 -->
+            <div id="timeSlots" class="row g-2"></div>
+
         </div>
+
 
         <!-- Step 5: 확인 -->
         <div class="step" id="step5">
-            <h5>✅ 예약 확인</h5>
+            <h5>예약 확인</h5>
             <div id="summary" class="border p-3 mb-3 bg-light"></div>
-            <button class="btn btn-secondary" onclick="prevStep(4)">이전</button>
             <button class="btn btn-success float-end" onclick="confirmBooking()">결제하기</button>
         </div>
     </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
     <script src="carData.js"></script>
     <script src="courseInfo.js"></script>
 
 
 
     <script>
-        let bookingData = {};
+        let bookingData = {
+            interior: null // 선택전 상태는 null
+        };
         let currentStep = 1;
         let calendar;
         let appliedDiscount = 0;
+
+        //뒤로가기
+        function goBackStep() {
+            if (currentStep > 1) {
+                document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+                document.getElementById('step' + (currentStep - 1)).classList.add('active');
+                updateProgress(currentStep - 1);
+            } else {
+                // Step1일 때는 홈으로 가거나 모달 닫기 등 선택
+                window.location.href = "index.html";
+            }
+        }
+
 
         // Step 진행바
         function updateProgress(step) {
@@ -201,17 +292,18 @@
             document.getElementById("progressBar").innerText = `Step ${step} / 5`;
         }
 
-        // Step 이동
         function nextStep(step) {
             // Step2로 이동: 예약자 정보 필수
             if (step === 2) {
                 const name = document.getElementById("name").value.trim();
                 const phone = document.getElementById("phone").value.trim();
                 const address = document.getElementById("address").value.trim();
+
                 if (!name) return alert("예약자 성함을 입력해주세요.");
-                if (!phone) return alert("연락처를 입력해주세요.");
+                if (!phone.match(/^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/))
+                    return alert("연락처 형식을 확인해주세요.");
                 if (!address) return alert("주소를 검색해주세요.");
-                // 통과 시 bookingData에 반영
+
                 bookingData.name = name;
                 bookingData.phone = phone;
                 bookingData.address = address + " " + (document.getElementById("addressDetail").value || "");
@@ -224,7 +316,7 @@
                 }
             }
 
-            // Step4로 이동: 세차 코스 선택 필수(여기가 빠져 있었음!)
+            // Step4로 이동: 세차 코스 선택 필수
             if (step === 4) {
                 if (!bookingData.washType) return alert("세차 종류를 선택해주세요.");
                 if (!bookingData.course || !bookingData.courseKey) return alert("코스를 선택해주세요.");
@@ -237,49 +329,102 @@
             if (step === 5) {
                 if (!bookingData.date) return alert("예약 날짜를 선택해주세요.");
                 if (!bookingData.time) return alert("예약 시간을 선택해주세요.");
+                showSummary(); // ✅ 예약 확인 화면 채우기
             }
 
-            // --- 실제 화면 전환 ---
+            // ✅ 스텝 이동
             document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
             document.getElementById('step' + step).classList.add('active');
             updateProgress(step);
 
-            // 부가 처리
-            if (step === 3) {
-                // 가격/카드 갱신 (필요 시)
-                if (typeof updateSummaryBar === "function") updateSummaryBar();
-            }
+            // ✅ Step4일 때는 날짜 바 초기화
             if (step === 4) {
-                if (!calendar) initCalendar();
-                // 렌더 타이밍 유예
-                setTimeout(() => calendar && calendar.render(), 200);
-            }
-            if (step === 5) {
-                if (typeof showSummary === "function") showSummary();
+                initDateBar();
             }
         }
 
-        function prevStep(step) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById('step' + step).classList.add('active');
-            updateProgress(step);
+
+        function checkStep3Complete() {
+            if (bookingData.washType && bookingData.courseKey &&
+                (bookingData.washType !== "정기세차" || bookingData.months)) {
+                setTimeout(() => nextStep(4), 500);
+            }
         }
 
-        // 사용자 기본정보 자동 입력
+
         document.addEventListener("DOMContentLoaded", () => {
             const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-            if (currentUser) {
-                document.getElementById("name").value = currentUser.name || "";
-                document.getElementById("phone").value = currentUser.phone || "";
-                document.getElementById("address").value = currentUser.address || "";
-                document.getElementById("addressDetail").value = currentUser.addressDetail || "";
-                bookingData.name = currentUser.name || "";
-                bookingData.phone = currentUser.phone || "";
-                bookingData.address = (currentUser.address || "") + " " + (currentUser.addressDetail || "");
+            const editIndex = localStorage.getItem("editBookingIndex");
+
+            if (editIndex !== null) {
+                const bookingToEdit = currentUser.history[editIndex];
+                if (bookingToEdit) {
+                    bookingData = { ...bookingToEdit };
+
+                    // Step1 기본정보
+                    document.getElementById("name").value = bookingToEdit.name || currentUser.name;
+                    document.getElementById("phone").value = bookingToEdit.phone || currentUser.phone;
+                    document.getElementById("address").value = bookingToEdit.address || currentUser.address;
+                    document.getElementById("addressDetail").value = currentUser.addressDetail || "";
+
+                    // Step2 차량 & Step3 코스
+                    loadMyCars();
+                    initCarDropdown();
+                    applyBookingDataToUI();
+
+                    // Step4 날짜/시간
+                    setTimeout(() => {
+                        initDateBar();
+                        if (bookingToEdit.date && bookingToEdit.time) {
+                            bookingData.date = bookingToEdit.date;
+                            bookingData.time = bookingToEdit.time;
+                        }
+                    }, 300);
+
+                    // 항상 Step1에서 시작
+                    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+                    document.getElementById("step1").classList.add("active");
+                    updateProgress(1);
+                }
+            } else {
+                // 신규 예약 로직
+                if (currentUser) {
+                    document.getElementById("name").value = currentUser.name || "";
+                    document.getElementById("phone").value = currentUser.phone || "";
+                    document.getElementById("address").value = currentUser.address || "";
+                    document.getElementById("addressDetail").value = currentUser.addressDetail || "";
+                }
+                loadMyCars();
+                initCarDropdown();
             }
-            loadMyCars();
-            initCarDropdown();
+
+            // 🔑 여기서 공통 이벤트 리스너를 항상 등록 (신규/수정 둘 다)
+            ["name", "phone", "address"].forEach(id => {
+                document.getElementById(id).addEventListener("input", () => {
+                    if (
+                        document.getElementById("name").value.trim() &&
+                        document.getElementById("phone").value.trim() &&
+                        document.getElementById("address").value.trim()
+                    ) {
+                        setTimeout(() => nextStep(2), 500);
+                    }
+                });
+            });
+
+            document.getElementById("myCarList").addEventListener("click", (e) => {
+                if (e.target.tagName === "BUTTON") {
+                    setTimeout(() => nextStep(3), 500);
+                }
+            });
+
+            document.querySelectorAll("input[name='washType']").forEach(r => {
+                r.addEventListener("change", checkStep3Complete);
+            });
+            document.getElementById("courseSelect").addEventListener("change", checkStep3Complete);
+            document.getElementById("subscriptionSelect").addEventListener("change", checkStep3Complete);
         });
+
+
 
         // 차량 리스트
         function loadMyCars() {
@@ -408,9 +553,23 @@
 
 
         function toggleInterior() {
+            // 체크하면 true, 해제하면 false
             bookingData.interior = document.getElementById("interiorOption").checked;
+            checkStep3Complete(); // ✅ 옵션 선택 시에도 검사 실행
             updateSummaryBar();
         }
+
+        function checkStep3Complete() {
+            if (
+                bookingData.washType &&
+                bookingData.courseKey &&
+                (bookingData.washType !== "정기세차" || bookingData.months) &&
+                bookingData.interior !== null // ✅ 실내세차 선택 여부 반드시 반영
+            ) {
+                setTimeout(() => nextStep(4), 500);
+            }
+        }
+
 
         function openCouponBox() {
             const myCoupons = [
@@ -530,8 +689,6 @@
             document.getElementById("courseDescription").innerHTML = html;
         }
 
-        // === 여기쯤에 넣어주시면 돼요 ===
-
         // bookingData → Step3 UI 반영 함수
         function applyBookingDataToUI() {
             // 세차 종류 (radio)
@@ -560,41 +717,89 @@
             updateSummaryBar();
         }
 
+        let dateOffset = 0; // 오늘부터 며칠을 생성했는지 기록
 
-        //캘린더 초기화
-        function initCalendar() {
-            const calendarEl = document.getElementById("calendar");
-            if (!calendar) {
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: "dayGridMonth",
-                    selectable: true,
-                    dateClick: function (info) {
-                        bookingData.date = info.dateStr;
-                        renderTimeSlots(info.dateStr);
+        // Step4: 날짜 바 초기화
+        function initDateBar() {
+            const dateBar = document.getElementById("dateBar");
+            dateBar.innerHTML = "";
+            dateOffset = 0;
+            appendDates(7); // 최초 7일 생성
+
+            // 스크롤 이벤트: 끝까지 가면 추가 날짜 붙이기
+            dateBar.onscroll = () => {
+                if (dateBar.scrollLeft + dateBar.clientWidth >= dateBar.scrollWidth - 10) {
+                    appendDates(7);
+                }
+            };
+        }
+
+        // Step4: 날짜 추가 함수
+        function appendDates(count = 7) {
+            const dateBar = document.getElementById("dateBar");
+            const today = new Date();
+
+            for (let i = 0; i < count; i++) {
+                const d = new Date(today);
+                d.setDate(today.getDate() + dateOffset + i);
+
+                const dayStr = d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
+                const weekStr = d.toLocaleDateString("ko-KR", { weekday: "short" });
+
+                const div = document.createElement("div");
+                div.className = "date-item";
+                div.innerHTML = `${dayStr}<br><small>${(dateOffset + i) === 0 ? "오늘" : weekStr}</small>`;
+                div.onclick = () => {
+                    bookingData.date = d.toISOString().split("T")[0];
+                    document.querySelectorAll(".date-item").forEach(el => el.classList.remove("active"));
+                    div.classList.add("active");
+                    renderTimeSlots(d);
+                };
+
+                // 첫 번째(오늘) 자동 선택
+                if (dateOffset === 0 && i === 0) {
+                    div.classList.add("active");
+                    bookingData.date = d.toISOString().split("T")[0];
+                    renderTimeSlots(d);
+                }
+
+                dateBar.appendChild(div);
+            }
+
+            dateOffset += count; // 오프셋 갱신
+        }
+
+        // Step4: 시간 슬롯 생성
+        // Step4: 시간 슬롯 생성
+        function renderTimeSlots(date) {
+            const container = document.getElementById("timeSlots");
+            container.innerHTML = "";
+
+            for (let h = 10; h <= 24; h++) {
+                const timeStr = (h < 10 ? "0" : "") + h + ":00";
+
+                const col = document.createElement("div");
+                col.className = "col-6 col-md-3";
+
+                const btn = document.createElement("button");
+                btn.className = "slot-btn";
+                btn.innerHTML = `${timeStr}<br><small>잔여 1/1</small>`;
+                btn.onclick = () => {
+                    bookingData.time = timeStr;
+                    document.querySelectorAll(".slot-btn").forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+
+                    // ✅ 날짜 & 시간까지 모두 선택되면 Step5로 자동 이동
+                    if (bookingData.date && bookingData.time) {
+                        setTimeout(() => nextStep(5), 500);
                     }
+                };
 
-                });
-                calendar.render();
+                col.appendChild(btn);
+                container.appendChild(col);
             }
         }
 
-        //캘린더 시간 버튼
-        function renderTimeSlots(dateStr) {
-            const slots = ["09:00", "11:00", "13:00", "15:00", "17:00"];
-            const container = document.getElementById("timeSlots");
-            container.innerHTML = "";
-            slots.forEach(t => {
-                const btn = document.createElement("button");
-                btn.className = "btn btn-outline-primary m-1";
-                btn.innerText = t;
-                btn.onclick = () => {
-                    bookingData.time = t;
-                    document.querySelectorAll("#timeSlots button").forEach(b => b.classList.remove("active"));
-                    btn.classList.add("active");
-                };
-                container.appendChild(btn);
-            });
-        }
 
         //예약확인
         function showSummary() {
@@ -617,9 +822,7 @@
         // 예약 확정
         function confirmBooking() {
             let bookings = JSON.parse(localStorage.getItem("bookings")) || [];
-            const newBooking = { ...bookingData, status: "대기중" };
-            bookings.push(newBooking);
-            localStorage.setItem("bookings", JSON.stringify(bookings));
+            const newBooking = { ...bookingData, status: "예약대기" }; // 상태명도 통일 추천
 
             let currentUser = JSON.parse(localStorage.getItem("currentUser"));
             if (!currentUser) {
@@ -634,27 +837,40 @@
             }
             if (!currentUser.history) currentUser.history = [];
 
-            // ✅ 필요한 값 모두 저장
-            currentUser.history.push({
-                date: new Date().toLocaleString(),
-                washType: bookingData.washType,
-                months: bookingData.months,
-                courseKey: bookingData.courseKey,
-                course: bookingData.course,
-                carNumber: bookingData.carNumber,
-                carCompany: bookingData.carCompany,
-                carModel: bookingData.carModel,
-                carSize: bookingData.carSize,
-                dateStr: bookingData.date,
-                time: bookingData.time,
-                finalPrice: bookingData.finalPrice,
-                detail: `${bookingData.course} - ${bookingData.date} ${bookingData.time}`
-            });
+            const editIndex = localStorage.getItem("editBookingIndex");
+
+            if (editIndex !== null) {
+                // ✅ 수정 모드 → 기존 기록 덮어쓰기
+                currentUser.history[editIndex] = {
+                    ...newBooking,
+                    date: new Date().toLocaleString(), // 수정한 시각 기록
+                    detail: `${bookingData.course} - ${bookingData.date} ${bookingData.time}`
+                };
+                localStorage.removeItem("editBookingIndex"); // 수정 끝났으니 초기화
+            } else {
+                // ✅ 신규 예약 → 기존 로직 그대로
+                bookings.push(newBooking);
+                localStorage.setItem("bookings", JSON.stringify(bookings));
+
+                currentUser.history.push({
+                    ...newBooking,
+                    date: new Date().toLocaleString(),
+                    detail: `${bookingData.course} - ${bookingData.date} ${bookingData.time}`
+                });
+            }
+
+            // 사용자 기본정보는 항상 갱신
+            currentUser.name = bookingData.name;
+            currentUser.phone = bookingData.phone;
+            currentUser.address = bookingData.address;
+            currentUser.addressDetail = document.getElementById("addressDetail").value;
 
             localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            alert("예약이 완료되었습니다!");
-            window.location.href = "index.html";
+
+            alert(editIndex !== null ? "예약이 수정되었습니다!" : "예약이 완료되었습니다!");
+            window.location.href = "usage.html"; // index.html 대신 이용내역으로 이동 추천
         }
+
 
 
         // 히스토리 모달 채우기
@@ -697,7 +913,7 @@
                         address: currentUser.address
                     };
 
-                    // ✅ UI와 동기화
+                    // UI와 동기화
                     applyBookingDataToUI();
 
                     const now = new Date();
