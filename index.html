@@ -45,7 +45,7 @@
     }
 
     .side-menu .menu-header h5 {
-        color: #0d6efd;
+        color:#29335a;
         font-size: 1.25rem;
         margin-bottom: 10px;
     }
@@ -71,7 +71,7 @@
     }
 
     .side-menu a:hover {
-        color: #0d6efd;
+        color: #29335a;
     }
 
     .side-menu .btn-link {
@@ -80,7 +80,7 @@
     }
 
     .side-menu .btn-link:hover {
-        color: #0d6efd;
+        color:#29335a;
     }
 
     .side-menu h6 {
@@ -91,6 +91,61 @@
         margin: 0;
     }
 
+/* 퀵메뉴 전체 박스 여백 */
+.quick-menu-index {
+    margin: 20px 10px 30px;
+}
+  /* 퀵메뉴 공통 */
+.quick-menu-index .quick-item {
+  background: white;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: background 0.2s;
+  padding: 20px 10px;
+
+  /* 추가 */
+  display: flex;
+  flex-direction: column;   /* 아이콘 위, 텍스트 아래 */
+  align-items: center;      /* 가로 중앙 */
+  justify-content: center;  /* 세로 중앙 */
+}
+
+.quick-menu-index .quick-item:hover {
+  background: #e9f3ff;
+}
+
+.quick-menu-index .quick-item i {
+  font-size: 26px;
+  display: block;
+  margin-bottom: 5px;
+  color: #29335a;
+}
+
+/* 예약하기 (한 줄 전체) */
+.quick-menu-index .quick-item.big {
+  width: 100%;
+  font-size: 1rem;
+  padding: 18px;
+  margin-bottom: 15px;
+}
+
+/* 내 차 버튼 (왼쪽 큰 사각형) */
+.quick-menu-index .quick-item.car-big {
+  height: 100%;
+  font-size: 0.95rem;
+  margin-right: 7.5px;
+}
+
+/* 오른쪽 작은 버튼 2개 */
+.quick-menu-index .quick-item.small {
+  flex: 1;         
+  font-size: 0.85rem;
+  margin-left: 7.5px;
+  padding: 12px;
+}
 
     /* 오버레이 */
     .overlay {
@@ -183,20 +238,40 @@
     <div id="overlay" class="overlay"></div>
 
     <!-- 퀵메뉴 -->
-    <div class="quick-menu">
-        <div class="quick-item" onclick="goMyCar()">
-            <i class="bi bi-car-front-fill"></i>내 차
-        </div>
-        <div class="quick-item" onclick="location.href='booking.html'">
-            <i class="bi bi-calendar-event"></i>예약하기
-        </div>
-        <div class="quick-item" onclick="location.href='tickets.html'">
-            <i class="bi bi-ticket-perforated-fill"></i>보관함
-        </div>
-        <div class="quick-item" onclick="location.href='usage.html'">
-            <i class="bi bi-clock-history"></i>이용내역
-        </div>
+<div class="quick-menu quick-menu-index container">
+  <!-- 예약하기 -->
+  <div class="row mb-2">
+    <div class="col-12">
+      <div class="quick-item big" onclick="location.href='booking.html'">
+        <i class="bi bi-calendar-event"></i>
+        예약하기
+      </div>
     </div>
+  </div>
+
+  <!-- 내 차 / 보관함 + 이용내역 -->
+  <div class="row g-2">
+    <!-- 내 차 (왼쪽 큰 사각형) -->
+    <div class="col-6">
+      <div class="quick-item car-big" onclick="goMyCar()">
+        <i class="bi bi-car-front-fill"></i>
+        내 차
+      </div>
+    </div>
+
+    <!-- 오른쪽 보관함/이용내역 세로 -->
+    <div class="col-6 d-flex flex-column gap-2">
+      <div class="quick-item small" onclick="location.href='tickets.html'">
+        <i class="bi bi-ticket-perforated-fill"></i>
+        보관함
+      </div>
+      <div class="quick-item small" onclick="location.href='usage.html'">
+        <i class="bi bi-clock-history"></i>
+        이용내역
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- 배너 캐러셀 -->
     <div id="promoCarousel" class="carousel slide px-3" data-bs-ride="carousel">
@@ -233,63 +308,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 col-md-4">
-                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">실내 청소 꿀팁</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4">
-                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">겨울철 세차 주의사항</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4">
-                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">여름철 차량 관리법</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-6 col-md-4">
-                <div class="card card-tip"><img src="https://placehold.co/400x250" class="card-img-top">
-                    <div class="card-body">
-                        <p class="card-text">세차 후 왁스 관리</p>
-                    </div>
-                </div>
-            </div>
         </div>
         <div class="text-center mt-3"><button class="btn btn-outline-primary btn-sm">더보기</button></div>
-    </div>
-
-    <!-- 세차상품 -->
-    <div class="container mt-4">
-        <h5 class="fw-bold mb-3">세차 상품권</h5>
-        <div class="row">
-            <div class="col-12 col-md-4">
-                <div class="card product-card">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">일반 세차</h6>
-                        <p>1회 외부 세차</p>
-                        <p class="fw-bold text-primary">25,000원~</p>
-                        <button class="btn btn-primary btn-sm">예약하기</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-md-4">
-                <div class="card product-card">
-                    <div class="card-body text-center">
-                        <h6 class="fw-bold">정기 세차</h6>
-                        <p>월 4회 / 8회 패키지</p>
-                        <p class="fw-bold text-primary">35,000원~</p>
-                        <button class="btn btn-primary btn-sm">예약하기</button>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <!-- 푸터 -->

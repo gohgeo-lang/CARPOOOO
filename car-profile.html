@@ -1,249 +1,306 @@
 <!DOCTYPE html>
 <html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CARPOOOO - 내 차량 프로필</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
     <style>
-        /* 헤더 */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1E90FF;
-            /* 브랜드 파란색 */
-            color: white;
+      /* 헤더 */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #29335a;
+        /* 브랜드 파란색 */
+        color: white;
+      }
+
+      .header-center {
+        text-align: center;
+      }
+
+      .btn-save-top {
+        border: none;
+        color: #ffffff;
+        background: none;
+        font-weight: 600;
+        padding: 6px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      .btn-save-top:hover {
+        color: #f1f1f1;
+      }
+
+      .car-card {
+        position: relative;
+        border-radius: 16px;
+        min-height: 250px;
+        background: #7b8fa2;
+        /* 사진 없을 때 기본 배경 */
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+        color: white;
+        margin-bottom: 20px;
+      }
+
+      /* 카드 hover 시 흔들림 효과 */
+      .car-card:hover {
+        animation: shake 0.3s;
+      }
+
+      /* 흔들림 키프레임 */
+      @keyframes shake {
+        0% {
+          transform: translateY(0);
         }
 
-        .header-center {
-            text-align: center;
+        25% {
+          transform: translateY(-3px);
         }
 
-        .btn-save-top {
-            border: none;
-            color: #ffffff;
-            background: none;
-            font-weight: 600;
-            padding: 6px 16px;
-            border-radius: 6px;
-            cursor: pointer;
+        50% {
+          transform: translateY(3px);
         }
 
-        .btn-save-top:hover {
-            color: #f1f1f1;
+        75% {
+          transform: translateY(-2px);
         }
 
-        .car-card {
-            position: relative;
-            border-radius: 16px;
-            min-height: 250px;
-            background: #7b8fa2;
-            /* 사진 없을 때 기본 배경 */
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-            color: white;
-            margin-bottom: 20px;
+        100% {
+          transform: translateY(0);
         }
+      }
 
-        /* 카드 hover 시 흔들림 효과 */
-        .car-card:hover {
-            animation: shake 0.3s;
+      /* 카드 전체 오버레이 */
+      .car-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.45);
+        /* 전체 어둡게 */
+        border-radius: 16px;
+        z-index: 0;
+      }
+
+      /* 닉네임 상단 고정 */
+      .car-nickname {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: bold;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        z-index: 2;
+      }
+
+      /* 하단 고정 정보 */
+      .car-info-wrapper {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 15px;
+        z-index: 2;
+      }
+
+      .car-info-wrapper p {
+        margin: 0 0 8px;
+        font-size: 0.9rem;
+        color: #ddd;
+      }
+
+      /* 차량 세부정보 박스 */
+      .car-stats {
+        display: flex;
+        justify-content: space-around;
+        gap: 10px;
+      }
+
+      .car-stats div {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 6px;
+        text-align: center;
+      }
+
+      .car-stats p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #ccc;
+      }
+
+      .car-stats h4 {
+        margin: 4px 0 0;
+        font-weight: bold;
+        color: #fff;
+      }
+
+      /* 브랜드 로고는 항상 우상단 */
+      .car-card .brand-logo {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        height: 50px;
+        z-index: 2;
+      }
+
+      .add-car-btn {
+        display: block;
+        width: 100%;
+        text-align: center;
+        margin-top: 15px;
+        padding: 12px;
+        border: 2px dashed #7b8fa2;
+        border-radius: 12px;
+        color: #7b8fa2;
+        font-weight: bold;
+        cursor: pointer;
+        background: white;
+      }
+
+      .add-car-btn:hover {
+        background: #f5f5f5;
+      }
+
+      /* 삭제 모드 카드 효과 */
+      .car-card.delete-mode {
+        cursor: pointer;
+        position: relative;
+        transition: filter 0.2s ease;
+      }
+
+      /* 선택된 카드 */
+      .car-card.selected {
+        filter: brightness(50%);
+        animation: none !important;
+        transform: scale(0.97);
+      }
+
+      @keyframes shake-vertical {
+        0% {
+          transform: translateY(0px);
         }
-
-        /* 흔들림 키프레임 */
-        @keyframes shake {
-            0% {
-                transform: translateY(0);
-            }
-
-            25% {
-                transform: translateY(-3px);
-            }
-
-            50% {
-                transform: translateY(3px);
-            }
-
-            75% {
-                transform: translateY(-2px);
-            }
-
-            100% {
-                transform: translateY(0);
-            }
+        20% {
+          transform: translateY(-2px);
         }
-
-
-        /* 카드 전체 오버레이 */
-        .car-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.45);
-            /* 전체 어둡게 */
-            border-radius: 16px;
-            z-index: 0;
+        40% {
+          transform: translateY(2px);
         }
-
-        /* 닉네임 상단 고정 */
-        .car-nickname {
-            position: absolute;
-            top: 15px;
-            left: 20px;
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            z-index: 2;
+        60% {
+          transform: translateY(-1px);
         }
-
-        /* 하단 고정 정보 */
-        .car-info-wrapper {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px;
-            z-index: 2;
+        80% {
+          transform: translateY(1px);
         }
-
-        .car-info-wrapper p {
-            margin: 0 0 8px;
-            font-size: 0.9rem;
-            color: #ddd;
+        100% {
+          transform: translateY(0px);
         }
+      }
 
-        /* 차량 세부정보 박스 */
-        .car-stats {
-            display: flex;
-            justify-content: space-around;
-            gap: 10px;
-        }
+      .car-card.delete-mode {
+        animation: shake-vertical 0.18s infinite ease-in-out;
+      }
 
-        .car-stats div {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            padding: 6px;
-            text-align: center;
-        }
-
-        .car-stats p {
-            margin: 0;
-            font-size: 0.8rem;
-            color: #ccc;
-        }
-
-        .car-stats h4 {
-            margin: 4px 0 0;
-            font-weight: bold;
-            color: #fff;
-        }
-
-        /* 브랜드 로고는 항상 우상단 */
-        .car-card .brand-logo {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            height: 50px;
-            z-index: 2;
-        }
-
-        .add-car-btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 15px;
-            padding: 12px;
-            border: 2px dashed #7b8fa2;
-            border-radius: 12px;
-            color: #7b8fa2;
-            font-weight: bold;
-            cursor: pointer;
-            background: white;
-        }
-
-        .add-car-btn:hover {
-            background: #f5f5f5;
-        }
+      /* 랜덤 효과 */
+      .car-card.delete-mode:nth-child(2n) {
+        animation-duration: 0.2s;
+        animation-delay: 0.05s;
+      }
+      .car-card.delete-mode:nth-child(3n) {
+        animation-duration: 0.16s;
+        animation-delay: -0.03s;
+      }
+      .car-card.delete-mode:nth-child(4n) {
+        animation-duration: 0.22s;
+        animation-delay: 0.1s;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
+  <body>
     <!-- 상단 헤더 -->
     <div class="header">
-        <!-- 뒤로가기 버튼 -->
-        <button class="btn btn-link text-white me-2" onclick="goBack()" style="font-size:1.2rem;">
-            <i class="bi bi-chevron-left"></i>
-        </button>
+      <!-- 뒤로가기 버튼 -->
+      <button
+        class="btn btn-link text-white me-2"
+        onclick="goBack()"
+        style="font-size: 1.2rem"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </button>
 
-        <div>
-            <h4 class="fw-bold mb-0">차고</h4>
-        </div>
-        <button type="submit" form="carForm" class="btn-save-top">
-            <i class="bi bi-trash3"></i>
-        </button>
+      <div>
+        <h4 class="fw-bold mb-0">차고</h4>
+      </div>
+      <button type="button" class="btn-save-top" onclick="toggleDeleteMode()">
+        <i class="bi bi-trash3"></i>
+      </button>
     </div>
 
+    <div class="container mt-4" style="max-width: 700px">
+      <div id="carCards"></div>
 
-    <div class="container mt-4" style="max-width:700px;">
-        <div id="carCards"></div>
-
-        <!-- 차량 추가 버튼 -->
-        <div class="add-car-btn" onclick="location.href='car-register.html'">
-            + 다른 차량 추가하기
-        </div>
+      <!-- 차량 추가 버튼 -->
+      <div class="add-car-btn" onclick="location.href='car-register.html'">
+        + 다른 차량 추가하기
+      </div>
     </div>
 
     <script>
-        //뒤로가기
-        function goBack() {
-            const ref = document.referrer;
+      //뒤로가기
+      function goBack() {
+        const ref = document.referrer;
 
-            // 이전 페이지가 car-detail이면 홈으로
-            if (ref.includes("car-detail.html")) {
-                window.location.href = "index.html";
-            } else if (ref) {
-                history.back();
-            } else {
-                window.location.href = "index.html";
-            }
-        }
-
-
-
-        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-        if (!currentUser || !currentUser.cars || currentUser.cars.length === 0) {
-            alert("등록된 차량이 없습니다.");
-            window.location.href = "car-register.html";
+        // 이전 페이지가 car-detail이면 홈으로
+        if (ref.includes("car-detail.html")) {
+          window.location.href = "index.html";
+        } else if (ref) {
+          history.back();
         } else {
-            const carCardsDiv = document.getElementById("carCards");
-            carCardsDiv.innerHTML = "";
+          window.location.href = "index.html";
+        }
+      }
 
-            currentUser.cars.forEach((car, idx) => {
-                const div = document.createElement("div");
-                div.className = "car-card";
+      const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+      if (!currentUser || !currentUser.cars || currentUser.cars.length === 0) {
+        alert("등록된 차량이 없습니다.");
+        window.location.href = "car-register.html";
+      } else {
+        const carCardsDiv = document.getElementById("carCards");
+        carCardsDiv.innerHTML = "";
 
-                // 배경이미지 지정 (없으면 기본색 유지)
-                if (car.carImage) {
-                    div.style.backgroundImage = `url(${car.carImage})`;
-                } else {
-                    div.style.backgroundImage = "none";
-                }
+        currentUser.cars.forEach((car, idx) => {
+          const div = document.createElement("div");
+          div.className = "car-card";
 
-                div.innerHTML = `
+          // 배경이미지 지정 (없으면 기본색 유지)
+          if (car.carImage) {
+            div.style.backgroundImage = `url(${car.carImage})`;
+          } else {
+            div.style.backgroundImage = "none";
+          }
+
+          div.innerHTML = `
   <!-- 닉네임 + 상세 아이콘 (상단 왼쪽) -->
   <h3 class="car-nickname" onclick="goDetail(${idx})">
     <span>${car.carNickname || car.carModel}</span>
@@ -252,29 +309,99 @@
 
   <!-- 하단 고정 정보 -->
   <div class="car-info-wrapper">
-    <p>${car.registerDate ?
-                        Math.floor((Date.now() - new Date(car.registerDate)) / (1000 * 60 * 60 * 24)) + "일째 관리 중"
-                        : ""} | 마지막 세차: ${car.lastWashDate || "-"}</p>
+    <p>${
+      car.registerDate
+        ? Math.floor(
+            (Date.now() - new Date(car.registerDate)) / (1000 * 60 * 60 * 24)
+          ) + "일째 관리 중"
+        : ""
+    } | 마지막 세차: ${car.lastWashDate || "-"}</p>
     <div class="car-stats">
       <div><p>브랜드</p><h4>${car.carCompany}</h4></div>
-      <div><p>년식</p><h4>${car.carYear || '-'}</h4></div>
+      <div><p>년식</p><h4>${car.carYear || "-"}</h4></div>
       <div><p>차량번호</p><h4>${car.carNumber}</h4></div>
     </div>
   </div>
 
   <!-- 브랜드 로고 -->
-  <img class="brand-logo" src="${car.brandLogo || 'https://placehold.co/50x50?text=LOGO'}" alt="브랜드 로고">
+  <img class="brand-logo" src="${
+    car.brandLogo || "https://placehold.co/50x50?text=LOGO"
+  }" alt="브랜드 로고">
 `;
 
-                carCardsDiv.appendChild(div);
+          carCardsDiv.appendChild(div);
+        });
+      }
+
+      function goDetail(idx) {
+        localStorage.setItem("selectedCarIndex", idx);
+        location.href = "car-detail.html";
+      }
+
+      let deleteMode = false;
+      let selectedCars = new Set();
+
+      function toggleDeleteMode() {
+        deleteMode = !deleteMode;
+        selectedCars.clear();
+
+        const carCards = document.querySelectorAll(".car-card");
+        carCards.forEach((card, idx) => {
+          if (deleteMode) {
+            card.classList.add("delete-mode");
+            card.onclick = () => toggleSelectCard(card, idx);
+          } else {
+            card.classList.remove("delete-mode", "selected");
+            card.onclick = () => goDetail(idx); // 원래 상세보기 복구
+          }
+        });
+
+        updateBottomButton();
+      }
+
+      function toggleSelectCard(card, idx) {
+        if (selectedCars.has(idx)) {
+          selectedCars.delete(idx);
+          card.classList.remove("selected");
+        } else {
+          selectedCars.add(idx);
+          card.classList.add("selected");
+        }
+        updateBottomButton();
+      }
+
+      function updateBottomButton() {
+        const addCarBtn = document.querySelector(".add-car-btn");
+        if (deleteMode) {
+          addCarBtn.textContent = `선택된 ${selectedCars.size}대 삭제하기`;
+          addCarBtn.onclick = confirmDeleteSelected;
+          addCarBtn.style.border = "2px solid #dc3545";
+          addCarBtn.style.color = "#dc3545";
+        } else {
+          addCarBtn.textContent = "+ 다른 차량 추가하기";
+          addCarBtn.onclick = () => (location.href = "car-register.html");
+          addCarBtn.style.border = "2px dashed #7b8fa2";
+          addCarBtn.style.color = "#7b8fa2";
+        }
+      }
+
+      function confirmDeleteSelected() {
+        if (selectedCars.size === 0) {
+          alert("삭제할 차량을 선택해주세요.");
+          return;
+        }
+        if (confirm(`선택된 ${selectedCars.size}대를 삭제하시겠습니까?`)) {
+          let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+          // 선택된 index 역순으로 정렬해서 splice
+          [...selectedCars]
+            .sort((a, b) => b - a)
+            .forEach((idx) => {
+              currentUser.cars.splice(idx, 1);
             });
+          localStorage.setItem("currentUser", JSON.stringify(currentUser));
+          location.reload();
         }
-
-        function goDetail(idx) {
-            localStorage.setItem("selectedCarIndex", idx);
-            location.href = "car-detail.html";
-        }
+      }
     </script>
-</body>
-
+  </body>
 </html>

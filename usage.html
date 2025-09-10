@@ -1,259 +1,313 @@
 <!DOCTYPE html>
 <html lang="ko">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CARPOOOO - 이용내역</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link href="style.css" rel="stylesheet" />
 
     <style>
-        body.usage {
-            padding-top: 60px;
-        }
+      body.usage {
+        padding-top: 60px;
+      }
 
-        /* 헤더: mypage 스타일 참고 */
-        .header {
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 60px;
-            padding: 0 15px;
-        }
+      /* 헤더: mypage 스타일 참고 */
+      .header {
+        background: #fff;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        height: 60px;
+        padding: 0 15px;
+      }
 
-        .header h4 {
-            font-size: 20px;
-            color: #000;
-            margin: 0;
-        }
+      .header h4 {
+        font-size: 20px;
+        color: #000;
+        margin: 0;
+      }
 
-        /* 탭 메뉴 */
-        .nav-tabs {
-            border-bottom: 1px solid #eee;
-        }
+      /* 탭 메뉴 */
+      .nav-tabs {
+        border-bottom: 1px solid #eee;
+      }
 
-        .nav-tabs .nav-link {
-            border: none;
-            font-weight: 500;
-            color: #666;
-        }
+      .nav-tabs .nav-link {
+        border: none;
+        font-weight: 500;
+        color: #666;
+      }
 
-        .nav-tabs .nav-link.active {
-            color: #1E90FF;
-            font-weight: bold;
-            border-bottom: 2px solid #1E90FF;
-            background: none;
-        }
+      .nav-tabs .nav-link.active {
+        color: #1e90ff;
+        font-weight: bold;
+        border-bottom: 2px solid #1e90ff;
+        background: none;
+      }
 
-        /* 예약 카드 */
-        .booking-card {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, .05);
-        }
+      /* 예약 카드 */
+      .booking-card {
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+      }
 
-        .booking-card h6 {
-            font-weight: bold;
-        }
+      .booking-card h6 {
+        font-weight: bold;
+      }
 
-        .booking-info {
-            font-size: .9rem;
-            color: #555;
-            margin: 2px 0;
-        }
+      .booking-info {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 2px 0;
+      }
 
-        /* 상태 배지 */
-        .badge-status {
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: .8rem;
-            font-weight: bold;
-        }
+      /* 상태 배지 */
+      .badge-status {
+        padding: 4px 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: bold;
+      }
 
-        .badge-pending {
-            background: #ffc107;
-            color: #fff;
-        }
+      .badge-pending {
+        background: #ffc107;
+        color: #fff;
+      }
 
-        .badge-done {
-            background: #28a745;
-            color: #fff;
-        }
+      .badge-done {
+        background: #28a745;
+        color: #fff;
+      }
 
-        .badge-cancel {
-            background: #dc3545;
-            color: #fff;
-        }
+      .badge-cancel {
+        background: #dc3545;
+        color: #fff;
+      }
 
-        .badge-confirmed {
-            background: #007bff;
-            color: #fff;
-        }
+      .badge-confirmed {
+        background: #007bff;
+        color: #fff;
+      }
     </style>
-</head>
+  </head>
 
-<body class="usage">
+  <body class="usage">
     <!-- 헤더 -->
     <div class="header">
-        <button class="btn btn-link text-dark me-1" onclick="history.back()">
-            <i class="bi bi-chevron-left fs-4"></i>
-        </button>
-        <h4>이용내역</h4>
+      <button class="btn btn-link text-dark me-1" onclick="goBackOrHome()">
+        <i class="bi bi-chevron-left fs-4"></i>
+      </button>
+      <h4>이용내역</h4>
     </div>
 
     <!-- 탭 메뉴 -->
     <ul class="nav nav-tabs px-3 mt-2" id="usageTabs">
-        <li class="nav-item">
-            <button class="nav-link" id="sub-tab" data-bs-toggle="tab" data-bs-target="#subscription">구독 내역</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link active" id="res-tab" data-bs-toggle="tab" data-bs-target="#reservations">예약
-                내역</button>
-        </li>
-        <li class="nav-item">
-            <button class="nav-link" id="done-tab" data-bs-toggle="tab" data-bs-target="#completed">최근 이용 기록</button>
-        </li>
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          id="sub-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#subscription"
+        >
+          구독 내역
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link active"
+          id="res-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#reservations"
+        >
+          예약 내역
+        </button>
+      </li>
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          id="done-tab"
+          data-bs-toggle="tab"
+          data-bs-target="#completed"
+        >
+          최근 이용 기록
+        </button>
+      </li>
     </ul>
 
     <!-- 배지설명 -->
     <div class="container mt-2">
-        <div class="alert alert-light border small text-muted" role="alert">
-            <ul class="mb-0 ps-3">
-                <li><b>예약대기</b>: 예약 수정 및 취소 가능 (위약금 없음)</li>
-                <li><b>예약확정</b>: 예약 수정 불가, 취소는 가능 (시점에 따라 위약금 발생)</li>
-                <li><b>완료</b>: 재예약만 가능</li>
-                <li><b>취소됨</b>: 기록 확인만 가능</li>
-            </ul>
-        </div>
+      <div class="alert alert-light border small text-muted" role="alert">
+        <ul class="mb-0 ps-3">
+          <li><b>예약대기</b>: 예약 수정 및 취소 가능 (위약금 없음)</li>
+          <li>
+            <b>예약확정</b>: 예약 수정 불가, 취소는 가능 (시점에 따라 위약금
+            발생)
+          </li>
+          <li><b>완료</b>: 재예약만 가능</li>
+          <li><b>취소됨</b>: 기록 확인만 가능</li>
+        </ul>
+      </div>
     </div>
 
     <!-- 탭 콘텐츠 -->
     <div class="tab-content container mt-3">
-        <!-- 구독 내역 -->
-        <div class="tab-pane fade" id="subscription">
-            <div id="subContainer">
-                <!-- JS에서 구독 없으면 display:none 처리 -->
-                <div class="booking-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0">정기 세차 구독 (월 4회)</h6>
-                        <span class="badge-status badge-pending">구독 중</span>
-                    </div>
-                    <p class="booking-info"><i class="bi bi-calendar-event"></i> 다음 결제일: 2025.09.01</p>
-                    <div class="mt-2">
-                        <button class="btn btn-sm btn-outline-danger">구독 해지</button>
-                    </div>
-                </div>
+      <!-- 구독 내역 -->
+      <div class="tab-pane fade" id="subscription">
+        <div id="subContainer">
+          <!-- JS에서 구독 없으면 display:none 처리 -->
+          <div class="booking-card">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="mb-0">정기 세차 구독 (월 4회)</h6>
+              <span class="badge-status badge-pending">구독 중</span>
             </div>
+            <p class="booking-info">
+              <i class="bi bi-calendar-event"></i> 다음 결제일: 2025.09.01
+            </p>
+            <div class="mt-2">
+              <button class="btn btn-sm btn-outline-danger">구독 해지</button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        <!-- 예약 내역 -->
-        <div class="tab-pane fade show active" id="reservations">
-            <div class="booking-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">프리미엄 세차 코스</h6>
-                    <span class="badge-status badge-pending">예약 예정</span>
-                </div>
-                <p class="booking-info"><i class="bi bi-calendar-event"></i> 2025.09.05 (금) 오후 2시</p>
-                <p class="booking-info"><i class="bi bi-geo-alt"></i> 서울 강남구 ○○동 ○○아파트</p>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-outline-primary">상세보기</button>
-                    <button class="btn btn-sm btn-outline-danger">예약취소</button>
-                </div>
-            </div>
+      <!-- 예약 내역 -->
+      <div class="tab-pane fade show active" id="reservations">
+        <div class="booking-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">프리미엄 세차 코스</h6>
+            <span class="badge-status badge-pending">예약 예정</span>
+          </div>
+          <p class="booking-info">
+            <i class="bi bi-calendar-event"></i> 2025.09.05 (금) 오후 2시
+          </p>
+          <p class="booking-info">
+            <i class="bi bi-geo-alt"></i> 서울 강남구 ○○동 ○○아파트
+          </p>
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-primary">상세보기</button>
+            <button class="btn btn-sm btn-outline-danger">예약취소</button>
+          </div>
         </div>
+      </div>
 
-        <!-- 최근 이용 기록 -->
-        <div class="tab-pane fade" id="completed">
-            <div class="booking-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="mb-0">일반 세차 코스</h6>
-                    <span class="badge-status badge-done">완료</span>
-                </div>
-                <p class="booking-info"><i class="bi bi-calendar-event"></i> 2025.08.20 (수) 오후 1시</p>
-                <p class="booking-info"><i class="bi bi-geo-alt"></i> 서울 송파구 ○○주택</p>
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-outline-secondary">재예약하기</button>
-                </div>
-            </div>
+      <!-- 최근 이용 기록 -->
+      <div class="tab-pane fade" id="completed">
+        <div class="booking-card">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h6 class="mb-0">일반 세차 코스</h6>
+            <span class="badge-status badge-done">완료</span>
+          </div>
+          <p class="booking-info">
+            <i class="bi bi-calendar-event"></i> 2025.08.20 (수) 오후 1시
+          </p>
+          <p class="booking-info">
+            <i class="bi bi-geo-alt"></i> 서울 송파구 ○○주택
+          </p>
+          <div class="mt-2">
+            <button class="btn btn-sm btn-outline-secondary">재예약하기</button>
+          </div>
         </div>
+      </div>
     </div>
     <!-- 예약 카드 생성 JS -->
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-            if (!currentUser || !currentUser.history || currentUser.history.length === 0) {
-                document.querySelector(".tab-content").innerHTML = "<p class='text-center text-muted mt-5'>예약 내역이 없습니다.</p>";
-                return;
-            }
+      document.addEventListener("DOMContentLoaded", () => {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (
+          !currentUser ||
+          !currentUser.history ||
+          currentUser.history.length === 0
+        ) {
+          document.querySelector(".tab-content").innerHTML =
+            "<p class='text-center text-muted mt-5'>예약 내역이 없습니다.</p>";
+          return;
+        }
 
-            const history = currentUser.history;
-            const resContainer = document.getElementById("reservations");
-            const doneContainer = document.getElementById("completed");
-            const subContainer = document.getElementById("subContainer");
+        const history = currentUser.history;
+        const resContainer = document.getElementById("reservations");
+        const doneContainer = document.getElementById("completed");
+        const subContainer = document.getElementById("subContainer");
 
-            resContainer.innerHTML = "";
-            doneContainer.innerHTML = "";
-            subContainer.innerHTML = "";
+        resContainer.innerHTML = "";
+        doneContainer.innerHTML = "";
+        subContainer.innerHTML = "";
 
-            history.forEach((h, idx) => {
-                const card = document.createElement("div");
-                card.className = "booking-card";
+        history.forEach((h, idx) => {
+          const card = document.createElement("div");
+          card.className = "booking-card";
 
-                // 상태별 뱃지
-                let badgeClass = "badge-pending";
-                let badgeText = "예약대기";
-                if (h.status === "예약확정") {
-                    badgeClass = "badge-confirmed"; badgeText = "예약확정";
-                } else if (h.status === "완료") {
-                    badgeClass = "badge-done"; badgeText = "완료";
-                } else if (h.status === "취소") {
-                    badgeClass = "badge-cancel"; badgeText = "취소됨";
-                }
+          // 상태별 뱃지
+          let badgeClass = "badge-pending";
+          let badgeText = "예약대기";
+          if (h.status === "예약확정") {
+            badgeClass = "badge-confirmed";
+            badgeText = "예약확정";
+          } else if (h.status === "완료") {
+            badgeClass = "badge-done";
+            badgeText = "완료";
+          } else if (h.status === "취소") {
+            badgeClass = "badge-cancel";
+            badgeText = "취소됨";
+          }
 
-                // 상태별 버튼
-                let actionButtons = "";
-                if (h.status === "예약대기") {
-                    actionButtons = `
+          // 상태별 버튼
+          let actionButtons = "";
+          if (h.status === "예약대기") {
+            actionButtons = `
             `;
-                } else if (h.status === "예약확정") {
-                    const now = new Date();
-                    const bookingDate = new Date(`${h.dateStr} ${h.time}`);
-                    const diffDays = (bookingDate - now) / (1000 * 60 * 60 * 24);
+          } else if (h.status === "예약확정") {
+            const now = new Date();
+            const bookingDate = new Date(`${h.dateStr} ${h.time}`);
+            const diffDays = (bookingDate - now) / (1000 * 60 * 60 * 24);
 
-                    if (diffDays <= 0) {
-                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx}, true)">취소하기(수수료)</button>`;
-                    } else {
-                        actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx})">취소하기</button>`;
-                    }
-                } else if (h.status === "완료") {
-                    actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="rebook(${idx})">재예약하기</button>`;
-                }
+            if (diffDays <= 0) {
+              actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx}, true)">취소하기(수수료)</button>`;
+            } else {
+              actionButtons = `<button class="btn btn-sm btn-outline-danger" onclick="cancelBooking(${idx})">취소하기</button>`;
+            }
+          } else if (h.status === "완료") {
+            actionButtons = `<button class="btn btn-sm btn-outline-secondary" onclick="rebook(${idx})">재예약하기</button>`;
+          }
 
-                // 카드 본문
-                card.innerHTML = `
+          // 카드 본문
+          card.innerHTML = `
             <div class="d-flex justify-content-between align-items-center mb-2">
               <h6 class="mb-0">${h.course || "세차 코스"}</h6>
               <span class="badge-status ${badgeClass}">${badgeText}</span>
             </div>
-            <p class="booking-info"><i class="bi bi-calendar-event"></i> ${h.dateStr} ${h.time}</p>
-            <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.carNumber} · ${h.carCompany} ${h.carModel}</p>
-            <p class="booking-info"><i class="bi bi-geo-alt"></i> ${h.address || ""} ${h.addressDetail || ""}</p>
-          <p class="booking-info"><i class="bi bi-cash"></i> ${h.finalPrice?.toLocaleString() || 0}원</p>
+            <p class="booking-info"><i class="bi bi-calendar-event"></i> ${
+              h.dateStr
+            } ${h.time}</p>
+            <p class="booking-info"><i class="bi bi-geo-alt"></i> ${
+              h.carNumber
+            } · ${h.carCompany} ${h.carModel}</p>
+            <p class="booking-info"><i class="bi bi-geo-alt"></i> ${
+              h.address || ""
+            } ${h.addressDetail || ""}</p>
+          <p class="booking-info"><i class="bi bi-cash"></i> ${
+            h.finalPrice?.toLocaleString() || 0
+          }원</p>
           <div class="mt-2">${actionButtons}</div>
         `;
 
-                // 구독 카드 별도 표시
-                if (h.washType === "정기세차" && h.months && h.months > 0) {
-                    const subCard = document.createElement("div");
-                    subCard.className = "booking-card";
-                    subCard.innerHTML = `
+          // 구독 카드 별도 표시
+          if (h.washType === "정기세차" && h.months && h.months > 0) {
+            const subCard = document.createElement("div");
+            subCard.className = "booking-card";
+            subCard.innerHTML = `
       <div class="d-flex justify-content-between align-items-center mb-2">
           <h6 class="mb-0">정기 세차 구독 (${h.months}개월)</h6>
           <span class="badge-status badge-pending">구독 중</span>
@@ -264,70 +318,81 @@
           <button class="btn btn-sm btn-outline-danger">구독 해지</button>
       </div>
     `;
-                    subContainer.appendChild(subCard);
-                }
+            subContainer.appendChild(subCard);
+          }
 
-                card.addEventListener("click", (e) => {
-                    if (e.target.tagName === "BUTTON") return; // 버튼 클릭은 그대로 동작
-                    viewBooking(idx); // 카드 클릭은 항상 상세페이지 이동
-                });
+          card.addEventListener("click", (e) => {
+            if (e.target.tagName === "BUTTON") return; // 버튼 클릭은 그대로 동작
+            viewBooking(idx); // 카드 클릭은 항상 상세페이지 이동
+          });
 
-                function viewBooking(idx) {
-                    localStorage.setItem("viewBookingIndex", idx);
-                    window.location.href = "booking-detail.html";
-                }
+          function viewBooking(idx) {
+            localStorage.setItem("viewBookingIndex", idx);
+            sessionStorage.setItem("fromDetail", "true"); // 👉 플래그 저장
+            window.location.href = "usage.html";
+          }
 
-
-                // 상태별 컨테이너 배치
-                if (h.status === "완료") {
-                    doneContainer.appendChild(card);
-                } else {
-                    resContainer.appendChild(card);
-                }
-            });
-
-            // 구독 내역 없으면 탭 숨김
-            if (subContainer.innerHTML.trim() === "") {
-                document.getElementById("sub-tab").style.display = "none";
-                document.getElementById("subscription").style.display = "none";
-            }
+          // 상태별 컨테이너 배치
+          if (h.status === "완료") {
+            doneContainer.appendChild(card);
+          } else {
+            resContainer.appendChild(card);
+          }
         });
 
+        // 구독 내역 없으면 탭 숨김
+        if (subContainer.innerHTML.trim() === "") {
+          document.getElementById("sub-tab").style.display = "none";
+          document.getElementById("subscription").style.display = "none";
+        }
+      });
 
+      function goBackOrHome() {
+        // 히스토리에 이전 페이지가 있는 경우
+        if (document.referrer && document.referrer !== window.location.href) {
+          history.back();
+        } else {
+          // 이전 페이지가 없으면 홈으로
+          window.location.href = "index.html"; // 홈 주소에 맞게 수정
+        }
+      }
 
-        // 버튼 함수
-        function cancelBooking(idx, isSameDay = false) {
-            const currentUser = JSON.parse(localStorage.getItem("currentUser"));
-            if (!currentUser || !currentUser.history) return;
+      // 버튼 함수
+      function cancelBooking(idx, isSameDay = false) {
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || !currentUser.history) return;
 
-            if (isSameDay) {
-                if (!confirm("당일 취소는 수수료가 부과됩니다. 그래도 취소하시겠습니까?")) return;
-            } else {
-                if (!confirm("정말 예약을 취소하시겠습니까?")) return;
-            }
-
-            currentUser.history[idx].status = "취소";
-            currentUser.history[idx].cancelDate = new Date().toLocaleString();
-            currentUser.history[idx].cancelFee = isSameDay ? "수수료 발생" : "없음";
-
-            localStorage.setItem("currentUser", JSON.stringify(currentUser));
-            alert("예약이 취소되었습니다.");
-            location.reload();
+        if (isSameDay) {
+          if (
+            !confirm(
+              "당일 취소는 수수료가 부과됩니다. 그래도 취소하시겠습니까?"
+            )
+          )
+            return;
+        } else {
+          if (!confirm("정말 예약을 취소하시겠습니까?")) return;
         }
 
-        function editBooking(idx) {
-            localStorage.setItem("editBookingIndex", idx);
-            window.location.href = "booking.html";
-        }
+        currentUser.history[idx].status = "취소";
+        currentUser.history[idx].cancelDate = new Date().toLocaleString();
+        currentUser.history[idx].cancelFee = isSameDay ? "수수료 발생" : "없음";
 
-        function rebook(idx) {
-            localStorage.setItem("rebookIndex", idx);
-            window.location.href = "booking.html";
-        }
+        localStorage.setItem("currentUser", JSON.stringify(currentUser));
+        alert("예약이 취소되었습니다.");
+        location.reload();
+      }
+
+      function editBooking(idx) {
+        localStorage.setItem("editBookingIndex", idx);
+        window.location.href = "booking.html";
+      }
+
+      function rebook(idx) {
+        localStorage.setItem("rebookIndex", idx);
+        window.location.href = "booking.html";
+      }
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-
+  </body>
 </html>
