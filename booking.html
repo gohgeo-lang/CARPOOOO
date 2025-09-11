@@ -584,6 +584,13 @@
       let selectedPayment = null;
 
       window.onload = function () {
+        // 기존 예약 데이터 복원
+        const savedBooking = localStorage.getItem("tempBookingData");
+        if (savedBooking) {
+          bookingData = JSON.parse(savedBooking);
+          localStorage.removeItem("tempBookingData"); // 한 번 쓰면 지워줌
+        }
+
         if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(initMap, showError, {
             enableHighAccuracy: true,
@@ -592,7 +599,11 @@
           alert("GPS를 지원하지 않습니다.");
         }
         openBooking();
-        nextStep(1);
+
+        // step=3으로 바로 이동할 수 있도록 쿼리 처리
+        const urlParams = new URLSearchParams(window.location.search);
+        const step = urlParams.get("step");
+        nextStep(step ? parseInt(step) : 1);
       };
 
       function initMap(pos) {
@@ -630,7 +641,6 @@
           const panel = document.getElementById("bookingPanel");
           let offsetY = 0;
 
-          // 예약 패널이 fullscreen 아닐 때만 보정
           if (!panel.classList.contains("fullscreen")) {
             offsetY = panel.offsetHeight / 2;
             point.y -= offsetY;
@@ -638,7 +648,6 @@
           return proj.coordsFromContainerPoint(point);
         }
 
-        // ✅ 지도 이동할 때마다 마커 위치 업데이트
         kakao.maps.event.addListener(map, "center_changed", function () {
           const newPos = getAdjustedCenter();
           selectMarker.setPosition(newPos);
@@ -716,8 +725,9 @@
         } else if (step === 5) {
           panel.classList.add("fullscreen");
           panel.style.height = "100vh";
+          panel.style.overflowY = "auto"; // ✅ Step5는 스크롤 가능하게
           gpsBtn.hidden = true;
-          footer.classList.remove("d-none"); // 보이게만
+          footer.classList.remove("d-none");
           showSummary();
         }
       }
@@ -745,7 +755,6 @@
         bookingData.lat = lat;
         bookingData.lng = lon;
 
-        // 🔹 내 위치 마커 갱신
         if (myMarker) myMarker.setMap(null);
         myMarker = new kakao.maps.CustomOverlay({
           position: locPosition,
@@ -755,10 +764,8 @@
         });
         myMarker.setMap(map);
 
-        // 🔹 지도 중심 이동
         map.setCenter(locPosition);
 
-        // 🔹 선택 마커도 같이 갱신
         if (selectMarker) {
           selectMarker.setPosition(locPosition);
         }
@@ -781,9 +788,11 @@
           const div = document.createElement("div");
           div.className = "date-item";
           div.innerHTML = `<div>${d.getMonth() + 1}/${d.getDate()}</div>
-                     <div style="font-size:12px">${
-                       ["일", "월", "화", "수", "목", "금", "토"][d.getDay()]
-                     }</div>`;
+                         <div style="font-size:12px">${
+                           ["일", "월", "화", "수", "목", "금", "토"][
+                             d.getDay()
+                           ]
+                         }</div>`;
           div.onclick = () => {
             document
               .querySelectorAll(".date-item")
@@ -823,11 +832,13 @@
         }
       }
 
-      // ================= 주소 =================
+      // ================= 주소검색 & Step2 → Step3 이동 =================
       function execDaumPostcode() {
         new daum.Postcode({
           oncomplete: function (data) {
-            document.getElementById("address").value = data.address;
+            document.getElementById("address").value =
+              data.roadAddress || data.jibunAddress;
+            bookingData.address = data.roadAddress || data.jibunAddress;
           },
         }).open();
       }
@@ -835,6 +846,7 @@
       function confirmAddress() {
         const addr = document.getElementById("address").value;
         const detail = document.getElementById("addressDetail").value;
+
         if (!addr) {
           alert("주소를 선택해주세요.");
           return;
@@ -843,8 +855,10 @@
           alert("상세 주소를 입력해주세요.");
           return;
         }
+
         bookingData.address = addr;
         bookingData.addressDetail = detail;
+
         nextStep(3);
       }
 
@@ -861,96 +875,139 @@
 
         if (cars.length === 0) {
           noCarMessage.style.display = "block";
-          addCarBtn.style.display = "block";
-          return;
+        } else {
+          noCarMessage.style.display = "none";
+
+          cars.forEach((car) => {
+            const col = document.createElement("div");
+            col.className = "col-12 col-md-6 mb-3";
+
+            const card = document.createElement("div");
+            card.className =
+              "car-card card shadow-sm border-0 rounded-3 overflow-hidden";
+            card.style.cursor = "pointer";
+
+            let imgSection = "";
+            if (car.carImage) {
+              imgSection = `<img src="${car.carImage}" class="card-img-top"
+                             style="height:160px; object-fit:cover;">`;
+            } else {
+              imgSection = `<div style="height:160px; background:#29335a;
+                             display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">
+                             ${car.carNickname || car.carModel || "차량"}
+                            </div>`;
+            }
+
+            card.innerHTML = `${imgSection}
+              <div class="card-body">
+                <h6 class="fw-bold mb-1">${car.carNickname || car.carModel}</h6>
+                <p class="mb-0 small text-muted">${car.carCompany} ${
+              car.carModel
+            }</p>
+                <p class="mb-0 small">${car.carNumber}</p>
+              </div>`;
+
+            card.onclick = () => {
+              bookingData.car = car;
+              nextStep(4);
+            };
+
+            col.appendChild(card);
+            carListDiv.appendChild(col);
+          });
         }
+
         addCarBtn.style.display = "block";
+        const col = document.createElement("div");
+        col.className = "col-12 mb-5";
+        col.appendChild(addCarBtn);
+        carListDiv.appendChild(col);
 
-        cars.forEach((car) => {
-          const col = document.createElement("div");
-          col.className = "col-12 col-md-6 mb-3";
-          const card = document.createElement("div");
-          card.className =
-            "car-card card shadow-sm border-0 rounded-3 overflow-hidden";
-          card.style.cursor = "pointer";
+        // 등록 페이지 이동
+        addCarBtn.onclick = () => {
+          // 현재 예약 데이터 임시 저장
+          localStorage.setItem("tempBookingData", JSON.stringify(bookingData));
 
-          let imgSection = "";
-          if (car.carImage) {
-            imgSection = `<img src="${car.carImage}" class="card-img-top" 
-                     style="height:160px; object-fit:cover;">`;
-          } else {
-            imgSection = `<div style="height:160px; background:#29335a; 
-                     display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold;">
-                     ${car.carNickname || car.carModel || "차량"}
-                    </div>`;
-          }
-
-          card.innerHTML = `${imgSection}
-                      <div class="card-body">
-                        <h6 class="fw-bold mb-1">${
-                          car.carNickname || car.carModel
-                        }</h6>
-                        <p class="mb-0 small text-muted">${car.carCompany} ${
-            car.carModel
-          }</p>
-                        <p class="mb-0 small">${car.carNumber}</p>
-                      </div>`;
-          card.onclick = () => {
-            bookingData.car = car;
-            nextStep(4);
-          };
-
-          col.appendChild(card);
-          carListDiv.appendChild(col);
-        });
+          // 차량 등록 페이지로 이동 (예약에서 호출)
+          window.location.href = "car-register.html?from=booking";
+        };
       }
 
-      // ================= 세차 코스 & 옵션 =================
+      // ================= 코스 선택 =================
+
+      // 세차 종류 선택
       function chooseWash(type, e) {
+        bookingData.washType = type;
+        bookingData.subWash = null; // 초기화
+        bookingData.discount = 0;
+
+        // 버튼 active 표시
         document
           .querySelectorAll("#accordionWash .slot-btn")
           .forEach((btn) => btn.classList.remove("active"));
         e.target.classList.add("active");
-        bookingData.washType = type;
-        bookingData.subWash = null;
-        bookingData.discount = 0;
+
+        // 정기세차 선택 시 구독권 옵션 보이기
+        const subWashOptions = document.getElementById("subWashOptions");
         if (type === "정기세차") {
-          document.getElementById("subWashOptions").classList.remove("d-none");
+          subWashOptions.classList.remove("d-none");
         } else {
-          document.getElementById("subWashOptions").classList.add("d-none");
+          subWashOptions.classList.add("d-none");
         }
-        updateDescription();
+
+        // 상세 설명 업데이트
+        document.getElementById("courseDescription").textContent =
+          type === "정기세차"
+            ? "정기세차 구독권을 선택해주세요."
+            : "일반세차 1회 코스가 선택되었습니다.";
+
+        updateStep4Next();
       }
-      function chooseSubWash(period, discount, e) {
+
+      // 정기세차 구독권 선택
+      function chooseSubWash(name, discount, e) {
+        bookingData.subWash = name;
+        bookingData.discount = discount;
+
         document
           .querySelectorAll("#subWashOptions .slot-btn")
           .forEach((btn) => btn.classList.remove("active"));
         e.target.classList.add("active");
-        bookingData.washType = "정기세차";
-        bookingData.subWash = period;
-        bookingData.discount = discount;
-        updateDescription();
+
+        document.getElementById(
+          "courseDescription"
+        ).textContent = `${name} 구독권이 선택되었습니다. (${discount}% 할인 적용)`;
+
+        updateStep4Next();
       }
-      function chooseOption(isAdded, e) {
+
+      // 옵션 선택 (내부세차)
+      function chooseOption(addInterior, e) {
+        bookingData.interior = addInterior;
+
         document
           .querySelectorAll("#accordionOption .slot-btn")
           .forEach((btn) => btn.classList.remove("active"));
         e.target.classList.add("active");
-        bookingData.interior = isAdded;
-        updateDescription();
-        document.getElementById("step4NextBtn").disabled = false;
+
+        document.getElementById("courseDescription").textContent = addInterior
+          ? "내부세차가 추가되었습니다."
+          : "내부세차 옵션이 선택되지 않았습니다.";
+
+        updateStep4Next();
       }
-      function updateDescription() {
-        let desc = `<b>세차종류:</b> ${bookingData.washType || "-"}`;
-        if (bookingData.subWash)
-          desc += ` (${bookingData.subWash}, 할인 ${bookingData.discount}%)`;
-        if (bookingData.interior !== undefined) {
-          desc += `<br><b>내부세차:</b> ${
-            bookingData.interior ? "추가" : "없음"
-          }`;
+
+      // Step4 '다음' 버튼 활성화 여부 갱신
+      function updateStep4Next() {
+        const nextBtn = document.getElementById("step4NextBtn");
+
+        if (bookingData.washType === "정기세차") {
+          // 정기세차는 구독권까지 골라야 활성화
+          nextBtn.disabled = !bookingData.subWash;
+        } else {
+          // 일반세차는 세차 종류만 선택하면 활성화
+          nextBtn.disabled = !bookingData.washType;
         }
-        desc += `<br><br><i>선택한 코스에는 외부세차 기본 서비스가 포함됩니다.</i>`;
-        document.getElementById("courseDescription").innerHTML = desc;
       }
 
       // ================= 결제 =================
@@ -966,7 +1023,6 @@
         let discountTotal = discountCoupon + discountCredit;
         let total = subtotal - discountTotal;
 
-        // UI 업데이트
         document.getElementById("priceBase").textContent =
           base.toLocaleString() + "원";
         document.getElementById("priceImport").textContent =
@@ -985,23 +1041,24 @@
         bookingData.totalPrice = total;
         return total;
       }
+
       function showSummary() {
         const car = bookingData.car;
         document.getElementById("selectedCarCard").innerHTML = `
-    <div class="card-body d-flex align-items-center">
-      ${
-        car?.carImage
-          ? `<img src="${car.carImage}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;margin-right:10px;">`
-          : `<div style="width:80px;height:60px;background:#29335a;border-radius:8px;margin-right:10px;"></div>`
-      }
-      <div>
-        <h6 class="mb-1">${car?.carNickname || car?.carModel || ""}</h6>
-        <p class="mb-0 small text-muted">${car?.carCompany || ""} ${
+        <div class="card-body d-flex align-items-center">
+          ${
+            car?.carImage
+              ? `<img src="${car.carImage}" style="width:80px;height:60px;object-fit:cover;border-radius:8px;margin-right:10px;">`
+              : `<div style="width:80px;height:60px;background:#29335a;border-radius:8px;margin-right:10px;"></div>`
+          }
+          <div>
+            <h6 class="mb-1">${car?.carNickname || car?.carModel || ""}</h6>
+            <p class="mb-0 small text-muted">${car?.carCompany || ""} ${
           car?.carModel || ""
         }</p>
-        <p class="mb-0 small">${car?.carNumber || ""}</p>
-      </div>
-    </div>`;
+            <p class="mb-0 small">${car?.carNumber || ""}</p>
+          </div>
+        </div>`;
 
         document.getElementById("summaryDate").textContent =
           bookingData.date || "-";
@@ -1033,21 +1090,21 @@
         selectedPayment = method;
         updatePayButtonState();
       }
+
       function updatePayButtonState() {
         const isAgreed = document.getElementById("agreeCheck").checked;
         document.getElementById("payBtn").disabled = !(
           isAgreed && selectedPayment
         );
       }
+
       function submitPayment() {
-        // 결제 완료 알림
         alert(
           `결제가 완료되었습니다.\n결제수단: ${
             selectedPayment === "naver" ? "네이버페이" : "카드결제"
           }\n결제금액: ₩${bookingData.totalPrice.toLocaleString()}`
         );
 
-        // 예약 기록을 localStorage에 저장
         let currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
         if (!currentUser.history) currentUser.history = [];
 
@@ -1067,13 +1124,12 @@
           address: bookingData.address,
           addressDetail: bookingData.addressDetail,
           finalPrice: bookingData.totalPrice,
-          status: "예약확정", // 기본 상태
+          status: "예약확정",
         };
 
         currentUser.history.push(record);
         localStorage.setItem("currentUser", JSON.stringify(currentUser));
 
-        // 홈으로 이동 (랜딩 페이지 or usage.html 원하는 대로)
         window.location.href = "index.html";
       }
 

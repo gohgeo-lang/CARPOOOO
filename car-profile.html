@@ -46,8 +46,7 @@
         position: relative;
         border-radius: 16px;
         min-height: 250px;
-        background: #7b8fa2;
-        /* 사진 없을 때 기본 배경 */
+        background: #29335a;
         background-size: cover;
         background-position: center;
         overflow: hidden;
@@ -193,7 +192,7 @@
       .car-card.selected {
         filter: brightness(50%);
         animation: none !important;
-        transform: scale(0.97);
+        transform: scale(0.99);
       }
 
       @keyframes shake-vertical {
@@ -218,20 +217,20 @@
       }
 
       .car-card.delete-mode {
-        animation: shake-vertical 0.18s infinite ease-in-out;
+        animation: shake-vertical 0.281s infinite ease-in-out; /* 🔹 0.216s → 0.281s */
       }
 
-      /* 랜덤 효과 */
+      /* 랜덤 효과 (비율 맞춰 조정) */
       .car-card.delete-mode:nth-child(2n) {
-        animation-duration: 0.2s;
+        animation-duration: 0.312s; /* 0.24s → 0.312s */
         animation-delay: 0.05s;
       }
       .car-card.delete-mode:nth-child(3n) {
-        animation-duration: 0.16s;
+        animation-duration: 0.249s; /* 0.192s → 0.249s */
         animation-delay: -0.03s;
       }
       .car-card.delete-mode:nth-child(4n) {
-        animation-duration: 0.22s;
+        animation-duration: 0.343s; /* 0.264s → 0.343s */
         animation-delay: 0.1s;
       }
     </style>
@@ -243,7 +242,7 @@
       <!-- 뒤로가기 버튼 -->
       <button
         class="btn btn-link text-white me-2"
-        onclick="goBack()"
+        onclick="goBackOrHome()"
         style="font-size: 1.2rem"
       >
         <i class="bi bi-chevron-left"></i>
@@ -261,7 +260,10 @@
       <div id="carCards"></div>
 
       <!-- 차량 추가 버튼 -->
-      <div class="add-car-btn" onclick="location.href='car-register.html'">
+      <div
+        class="add-car-btn"
+        onclick="location.href='car-register.html?from=profile'"
+      >
         + 다른 차량 추가하기
       </div>
     </div>
@@ -400,6 +402,21 @@
             });
           localStorage.setItem("currentUser", JSON.stringify(currentUser));
           location.reload();
+        }
+      }
+
+      function goBackOrHome() {
+        // 현재 페이지가 car-profile일 때는 홈으로
+        if (window.location.pathname.includes("car-profile.html")) {
+          window.location.href = "index.html";
+          return;
+        }
+
+        // 그 외에는 원래 로직
+        if (document.referrer && document.referrer !== window.location.href) {
+          history.back();
+        } else {
+          window.location.href = "index.html";
         }
       }
     </script>

@@ -93,29 +93,6 @@ h6 {
   margin-top: 30px;
 }
 
-/* ========= 배지 ========= */
-.badges {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  padding: 15px;
-}
-
-.badge-item {
-  flex: 0 0 auto;
-  background: #fff;
-  padding: 10px 20px;
-  border-radius: 25px;
-  font-size: 14px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.badge-item:hover {
-  background: #e9f3ff;
-}
-
 /* ========= 커뮤니티 카드 ========= */
 .card-tip {
   border: none;
